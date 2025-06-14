@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Room</title>
+    <style>
+        body { 
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            background-color: rgba(0,0,0,0.5);
+            padding: 5px;
+            z-index: 100;
+        }
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">3D Room - Use WASD to move, mouse to look around</div>
+    <div id="controls">
+        <div>WASD: Move</div>
+        <div>Mouse: Look</div>
+        <div>Space: Jump</div>
+        <div>Shift: Sprint</div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/PointerLockControls.js"></script>
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB); // Sky blue
+        
+        // Camera
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.y = 1.6; // Eye level
+        
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 10, 7);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        scene.add(directionalLight);
+        
+        // Room dimensions
+        const roomWidth = 10;
+        const roomHeight = 5;
+        const roomDepth = 10;
+        
+        // Create room walls
+        function createWall(width, height, depth, color, x, y, z, rotationY = 0) {
+            const geometry = new THREE.BoxGeometry(width, height, depth);
+            const material = new THREE.MeshStandardMaterial({ color: color });
+            const wall = new THREE.Mesh(geometry, material);
+            wall.position.set(x, y, z);
+            wall.rotation.y = rotationY;
+            wall.receiveShadow = true;
+            scene.add(wall);
+            return wall;
+        }
+        
+        // Floor
+        const floor = createWall(roomWidth, 0.2, roomDepth, 0x8B4513, 0, 0, 0);
+        
+        // Walls
+        const backWall = createWall(roomWidth, roomHeight, 0.2, 0xF5F5DC, 0, roomHeight/2, -roomDepth/2);
+        const leftWall = createWall(0.2, roomHeight, roomDepth, 0xF5F5DC, -roomWidth/2, roomHeight/2, 0, Math.PI/2);
+        const rightWall = createWall(0.2, roomHeight, roomDepth, 0xF5F5DC, roomWidth/2, roomHeight/2, 0, Math.PI/2);
+        const frontWall = createWall(roomWidth, roomHeight, 0.2, 0xF5F5DC, 0, roomHeight/2, roomDepth/2);
+        
+        // Ceiling
+        const ceiling = createWall(roomWidth, 0.2, roomDepth, 0xFFFFFF, 0, roomHeight, 0);
+        
+        // Add some furniture
+        function createFurniture() {
+            // Bed
+            const bedGeometry = new THREE.BoxGeometry(3, 0.5, 2);
+            const bedMaterial = new THREE.MeshStandardMaterial({ color: 0x4169E1 });
+            const bed = new THREE.Mesh(bedGeometry, bedMaterial);
+            bed.position.set(-2, 0.25, 2);
+            bed.receiveShadow = true;
+            bed.castShadow = true;
+            scene.add(bed);
+            
+            // Bed pillows
+            const pillowGeometry = new THREE.BoxGeometry(0.8, 0.2, 0.8);
+            const pillowMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFFFF });
+            const pillow1 = new THREE.Mesh(pillowGeometry, pillowMaterial);
+            pillow1.position.set(-2.8, 0.5, 2.5);
+            pillow1.rotation.z = Math.PI/8;
+            scene.add(pillow1);
+            
+            const pillow2 = new THREE.Mesh(pillowGeometry, pillowMaterial);
+            pillow2.position.set(-1.2, 0.5, 2.5);
+            pillow2.rotation.z = -Math.PI/8;
+            scene.add(pillow2);
+            
+            // Desk
+            const deskGeometry = new THREE.BoxGeometry(2, 0.8, 1);
+            const deskMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+            const desk = new THREE.Mesh(deskGeometry, deskMaterial);
+            desk.position.set(3, 0.4, 2);
+            desk.receiveShadow = true;
+            desk.castShadow = true;
+            scene.add(desk);
+            
+            // Chair
+            const chairSeatGeometry = new THREE.BoxGeometry(0.8, 0.1, 0.8);
+            const chairBackGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.1);
+            const chairMaterial = new THREE.MeshStandardMaterial({ color: 0xA0522D });
+            
+            const chairSeat = new THREE.Mesh(chairSeatGeometry, chairMaterial);
+            chairSeat.position.set(3, 0.45, 3);
+            scene.add(chairSeat);
+            
+            const chairBack = new THREE.Mesh(chairBackGeometry, chairMaterial);
+            chairBack.position.set(3, 0.85, 3.4);
+            scene.add(chairBack);
+            
+            // Lamp
+            const lampBaseGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.2, 32);
+            const lampStandGeometry = new THREE.CylinderGeometry(0.03, 0.03, 1, 32);
+            const lampShadeGeometry = new THREE.ConeGeometry(0.3, 0.4, 32);
+            const lampMaterial = new THREE.MeshStandardMaterial({ color: 0xCD853F });
+            
+            const lampBase = new THREE.Mesh(lampBaseGeometry, lampMaterial);
+            lampBase.position.set(3, 0.1, 1.5);
+            scene.add(lampBase);
+            
+            const lampStand = new THREE.Mesh(lampStandGeometry, lampMaterial);
+            lampStand.position.set(3, 0.7, 1.5);
+            scene.add(lampStand);
+            
+            const lampShade = new THREE.Mesh(lampShadeGeometry, lampMaterial);
+            lampShade.position.set(3, 1.1, 1.5);
+            lampShade.rotation.x = Math.PI;
+            scene.add(lampShade);
+            
+            // Add lamp light
+            const lampLight = new THREE.PointLight(0xFFFACD, 1, 3);
+            lampLight.position.set(3, 1, 1.5);
+            scene.add(lampLight);
+        }
+        
+        createFurniture();
+        
+        // Add window
+        function createWindow() {
+            const windowWidth = 2;
+            const windowHeight = 2;
+            
+            // Window frame
+            const windowFrameGeometry = new THREE.BoxGeometry(windowWidth, windowHeight, 0.2);
+            const windowFrameMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+            const windowFrame = new THREE.Mesh(windowFrameGeometry, windowFrameMaterial);
+            windowFrame.position.set(0, roomHeight/2, roomDepth/2 - 0.1);
+            scene.add(windowFrame);
+            
+            // Window glass
+            const windowGlassGeometry = new THREE.BoxGeometry(windowWidth - 0.2, windowHeight - 0.2, 0.1);
+            const windowGlassMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xADD8E6, 
+                transparent: true, 
+                opacity: 0.7 
+            });
+            const windowGlass = new THREE.Mesh(windowGlassGeometry, windowGlassMaterial);
+            windowGlass.position.set(0, roomHeight/2, roomDepth/2 - 0.05);
+            scene.add(windowGlass);
+            
+            // Add sunlight through window
+            const windowLight = new THREE.DirectionalLight(0xFFFACD, 0.8);
+            windowLight.position.set(0, 3, roomDepth/2 + 2);
+            windowLight.target.position.set(0, 0, 0);
+            windowLight.castShadow = true;
+            scene.add(windowLight);
+            scene.add(windowLight.target);
+        }
+        
+        createWindow();
+        
+        // Add door
+        function createDoor() {
+            const doorWidth = 1.5;
+            const doorHeight = 2.5;
+            
+            // Door frame
+            const doorFrameGeometry = new THREE.BoxGeometry(doorWidth + 0.2, doorHeight + 0.2, 0.2);
+            const doorFrameMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+            const doorFrame = new THREE.Mesh(doorFrameGeometry, doorFrameMaterial);
+            doorFrame.position.set(roomWidth/2 - 1, doorHeight/2, 0);
+            scene.add(doorFrame);
+            
+            // Door
+            const doorGeometry = new THREE.BoxGeometry(doorWidth, doorHeight, 0.1);
+            const doorMaterial = new THREE.MeshStandardMaterial({ color: 0xA0522D });
+            const door = new THREE.Mesh(doorGeometry, doorMaterial);
+            door.position.set(roomWidth/2 - 1, doorHeight/2, 0.05);
+            scene.add(door);
+            
+            // Door handle
+            const handleGeometry = new THREE.SphereGeometry(0.05, 16, 16);
+            const handleMaterial = new THREE.MeshStandardMaterial({ color: 0xC0C0C0 });
+            const handle = new THREE.Mesh(handleGeometry, handleMaterial);
+            handle.position.set(roomWidth/2 - 1.7, doorHeight/2, 0.1);
+            scene.add(handle);
+        }
+        
+        createDoor();
+        
+        // Add rug
+        function createRug() {
+            const rugGeometry = new THREE.BoxGeometry(3, 0.05, 2);
+            const rugMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x8B0000,
+                roughness: 0.8
+            });
+            const rug = new THREE.Mesh(rugGeometry, rugMaterial);
+            rug.position.set(0, 0.025, -2);
+            rug.receiveShadow = true;
+            scene.add(rug);
+            
+            // Add pattern to rug
+            const rugPatternGeometry = new THREE.PlaneGeometry(2.8, 1.8);
+            const rugPatternMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xFFD700,
+                side: THREE.DoubleSide
+            });
+            const rugPattern = new THREE.Mesh(rugPatternGeometry, rugPatternMaterial);
+            rugPattern.position.set(0, 0.03, -2);
+            rugPattern.rotation.x = Math.PI / 2;
+            scene.add(rugPattern);
+        }
+        
+        createRug();
+        
+        // First-person controls
+        const controls = new THREE.PointerLockControls(camera, document.body);
+        
+        // Movement variables
+        const moveSpeed = 0.1;
+        const sprintSpeed = 0.2;
+        const jumpHeight = 0.5;
+        let currentSpeed = moveSpeed;
+        let velocityY = 0;
+        let isGrounded = false;
+        
+        // Key states
+        const keys = {
+            w: false,
+            a: false,
+            s: false,
+            d: false,
+            shift: false,
+            space: false
+        };
+        
+        // Event listeners for keyboard
+        document.addEventListener('keydown', (event) => {
+            switch (event.code) {
+                case 'KeyW': keys.w = true; break;
+                case 'KeyA': keys.a = true; break;
+                case 'KeyS': keys.s = true; break;
+                case 'KeyD': keys.d = true; break;
+                case 'ShiftLeft': 
+                    keys.shift = true; 
+                    currentSpeed = sprintSpeed;
+                    break;
+                case 'Space': 
+                    if (isGrounded) {
+                        keys.space = true;
+                        velocityY = jumpHeight;
+                        isGrounded = false;
+                    }
+                    break;
+            }
+        });
+        
+        document.addEventListener('keyup', (event) => {
+            switch (event.code) {
+                case 'KeyW': keys.w = false; break;
+                case 'KeyA': keys.a = false; break;
+                case 'KeyS': keys.s = false; break;
+                case 'KeyD': keys.d = false; break;
+                case 'ShiftLeft': 
+                    keys.shift = false; 
+                    currentSpeed = moveSpeed;
+                    break;
+                case 'Space': keys.space = false; break;
+            }
+        });
+        
+        // Click to lock pointer (controls)
+        document.addEventListener('click', () => {
+            if (!controls.isLocked) {
+                controls.lock();
+            }
+        });
+        
+        // Gravity and movement
+        function updatePosition() {
+            // Apply gravity
+            velocityY -= 0.01;
+            controls.getObject().position.y += velocityY;
+            
+            // Ground collision
+            if (controls.getObject().position.y < 1.6) {
+                controls.getObject().position.y = 1.6;
+                velocityY = 0;
+                isGrounded = true;
+            }
+            
+            // Wall collision boundaries
+            const boundary = roomWidth/2 - 0.5;
+            const frontBackBoundary = roomDepth/2 - 0.5;
+            
+            // Movement
+            const direction = new THREE.Vector3();
+            const frontVector = new THREE.Vector3(0, 0, -1).applyQuaternion(controls.getObject().quaternion);
+            const sideVector = new THREE.Vector3(-1, 0, 0).applyQuaternion(controls.getObject().quaternion);
+            
+            if (keys.w) direction.add(frontVector);
+            if (keys.s) direction.sub(frontVector);
+            if (keys.a) direction.add(sideVector);
+            if (keys.d) direction.sub(sideVector);
+            
+            direction.normalize().multiplyScalar(currentSpeed);
+            
+            // Apply movement with collision detection
+            const newX = controls.getObject().position.x + direction.x;
+            const newZ = controls.getObject().position.z + direction.z;
+            
+            if (Math.abs(newX) < boundary) {
+                controls.getObject().position.x = newX;
+            }
+            
+            if (Math.abs(newZ) < frontBackBoundary) {
+                controls.getObject().position.z = newZ;
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (controls.isLocked) {
+                updatePosition();
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        animate();
+    </script>
+</body>
+</html>

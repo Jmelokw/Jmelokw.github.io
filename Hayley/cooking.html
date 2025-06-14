@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooking Chef</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #FFF5E1;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        #game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFE8C8;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #FF6B6B;
+            text-shadow: 2px 2px 0 #FFF;
+        }
+        
+        #recipe-display {
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            min-height: 100px;
+        }
+        
+        #kitchen-tools {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .tool {
+            width: 80px;
+            height: 80px;
+            background-color: #FFD166;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 40px;
+            user-select: none;
+            box-shadow: 0 4px 0 #CC9E22;
+            transition: transform 0.1s;
+        }
+        
+        .tool:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #CC9E22;
+        }
+        
+        #ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .ingredient {
+            width: 70px;
+            height: 70px;
+            background-color: #A8E6CF;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 30px;
+            user-select: none;
+            box-shadow: 0 3px 0 #6BBF9D;
+        }
+        
+        #cooking-area {
+            width: 100%;
+            height: 200px;
+            background-color: #FFAAA7;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #06D6A0;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        
+        #score-display {
+            font-size: 24px;
+            color: #FF6B6B;
+            margin: 10px 0;
+        }
+        
+        #action-button {
+            background-color: #FF6B6B;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 4px 0 #CC5252;
+            transition: transform 0.1s;
+        }
+        
+        #action-button:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #CC5252;
+        }
+        
+        .food-item {
+            position: absolute;
+            font-size: 40px;
+            user-select: none;
+        }
+        
+        .chopping-board {
+            width: 150px;
+            height: 100px;
+            background-color: #8B4513;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px;
+        }
+        
+        #timer {
+            font-size: 24px;
+            color: #FF6B6B;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>👩‍🍳 Cooking Chef 👨‍🍳</h1>
+        <div id="score-display">Score: 0</div>
+        <div id="timer">Time: 60</div>
+        
+        <div id="recipe-display">
+            <h2 id="recipe-title">Let's make a salad!</h2>
+            <p id="recipe-step">Select ingredients to begin</p>
+        </div>
+        
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        
+        <div id="cooking-area">
+            <div class="chopping-board"></div>
+        </div>
+        
+        <div id="ingredients">
+            <div class="ingredient" data-ingredient="tomato">🍅</div>
+            <div class="ingredient" data-ingredient="lettuce">🥬</div>
+            <div class="ingredient" data-ingredient="cucumber">🥒</div>
+            <div class="ingredient" data-ingredient="onion">🧅</div>
+            <div class="ingredient" data-ingredient="carrot">🥕</div>
+            <div class="ingredient" data-ingredient="cheese">🧀</div>
+        </div>
+        
+        <div id="kitchen-tools">
+            <div class="tool" data-tool="knife">🔪</div>
+            <div class="tool" data-tool="pan">🍳</div>
+            <div class="tool" data-tool="mix">🥄</div>
+            <div class="tool" data-tool="peeler">🥔</div>
+        </div>
+        
+        <button id="action-button">Start Cooking</button>
+    </div>
+
+    <script>
+        // Game variables
+        let score = 0;
+        let timeLeft = 60;
+        let currentStep = 0;
+        let selectedIngredients = [];
+        let activeTool = null;
+        let gameActive = false;
+        let timerInterval;
+        
+        // Recipes
+        const recipes = [
+            {
+                name: "Fresh Salad",
+                steps: [
+                    { instruction: "Select 3 ingredients for your salad", action: "select", count: 3 },
+                    { instruction: "Chop the ingredients", action: "chop", count: 10 },
+                    { instruction: "Mix everything together", action: "mix", count: 8 },
+                    { instruction: "Serve your salad!", action: "serve" }
+                ]
+            },
+            {
+                name: "Stir Fry",
+                steps: [
+                    { instruction: "Select 2 vegetables", action: "select", count: 2 },
+                    { instruction: "Chop the vegetables", action: "chop", count: 12 },
+                    { instruction: "Cook in the pan", action: "cook", count: 15 },
+                    { instruction: "Serve your stir fry!", action: "serve" }
+                ]
+            }
+        ];
+        
+        let currentRecipe = recipes[0];
+        
+        // DOM elements
+        const recipeTitle = document.getElementById('recipe-title');
+        const recipeStep = document.getElementById('recipe-step');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerDisplay = document.getElementById('timer');
+        const cookingArea = document.getElementById('cooking-area');
+        const actionButton = document.getElementById('action-button');
+        const ingredients = document.querySelectorAll('.ingredient');
+        const tools = document.querySelectorAll('.tool');
+        
+        // Initialize game
+        function initGame() {
+            score = 0;
+            timeLeft = 60;
+            currentStep = 0;
+            selectedIngredients = [];
+            updateScore();
+            updateTimer();
+            loadRecipeStep();
+            startTimer();
+            gameActive = true;
+        }
+        
+        // Start the timer
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        // Update timer display
+        function updateTimer() {
+            timerDisplay.textContent = `Time: ${timeLeft}`;
+        }
+        
+        // Update score display
+        function updateScore() {
+            scoreDisplay.textContent = `Score: ${score}`;
+        }
+        
+        // Load current recipe step
+        function loadRecipeStep() {
+            const step = currentRecipe.steps[currentStep];
+            recipeTitle.textContent = currentRecipe.name;
+            recipeStep.textContent = step.instruction;
+            progressBar.style.width = '0%';
+            
+            // Clear cooking area
+            cookingArea.innerHTML = '<div class="chopping-board"></div>';
+            
+            // Update action button
+            if (step.action === 'select') {
+                actionButton.textContent = 'Confirm Selection';
+                actionButton.style.display = 'block';
+            } else if (step.action === 'serve') {
+                actionButton.textContent = 'Serve Dish';
+                actionButton.style.display = 'block';
+            } else {
+                actionButton.style.display = 'none';
+            }
+        }
+        
+        // Handle ingredient selection
+        ingredients.forEach(ingredient => {
+            ingredient.addEventListener('click', () => {
+                if (!gameActive || currentRecipe.steps[currentStep].action !== 'select') return;
+                
+                const ing = ingredient.getAttribute('data-ingredient');
+                
+                if (selectedIngredients.includes(ing)) {
+                    // Remove ingredient
+                    const index = selectedIngredients.indexOf(ing);
+                    selectedIngredients.splice(index, 1);
+                    ingredient.style.backgroundColor = '#A8E6CF';
+                } else if (selectedIngredients.length < currentRecipe.steps[currentStep].count) {
+                    // Add ingredient
+                    selectedIngredients.push(ing);
+                    ingredient.style.backgroundColor = '#6BBF9D';
+                    
+                    // Add to cooking area
+                    const foodItem = document.createElement('div');
+                    foodItem.className = 'food-item';
+                    foodItem.textContent = ingredient.textContent;
+                    foodItem.style.left = `${Math.random() * 80 + 10}%`;
+                    foodItem.style.top = `${Math.random() * 50 + 10}%`;
+                    foodItem.setAttribute('data-ingredient', ing);
+                    cookingArea.appendChild(foodItem);
+                }
+            });
+        });
+        
+        // Handle tool selection
+        tools.forEach(tool => {
+            tool.addEventListener('click', () => {
+                if (!gameActive || currentRecipe.steps[currentStep].action === 'select' || 
+                    currentRecipe.steps[currentStep].action === 'serve') return;
+                
+                // Set active tool
+                activeTool = tool.getAttribute('data-tool');
+                
+                // Highlight selected tool
+                tools.forEach(t => t.style.backgroundColor = '#FFD166');
+                tool.style.backgroundColor = '#FFB347';
+            });
+        });
+        
+        // Handle cooking area clicks (chopping, mixing, etc.)
+        cookingArea.addEventListener('click', (e) => {
+            if (!gameActive || !activeTool || e.target === cookingArea) return;
+            
+            const step = currentRecipe.steps[currentStep];
+            
+            // Check if correct tool for current step
+            if ((step.action === 'chop' && activeTool === 'knife') ||
+                (step.action === 'mix' && activeTool === 'mix') ||
+                (step.action === 'cook' && activeTool === 'pan')) {
+                
+                // Progress the action
+                const currentWidth = parseFloat(progressBar.style.width) || 0;
+                const newWidth = currentWidth + (100 / step.count);
+                progressBar.style.width = `${newWidth}%`;
+                
+                // Animate the food item
+                if (e.target.classList.contains('food-item')) {
+                    if (step.action === 'chop') {
+                        e.target.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+                    } else if (step.action === 'mix') {
+                        const x = Math.random() * 80 + 10;
+                        const y = Math.random() * 80 + 10;
+                        e.target.style.left = `${x}%`;
+                        e.target.style.top = `${y}%`;
+                    } else if (step.action === 'cook') {
+                        e.target.style.opacity = `${0.5 + Math.random() * 0.5}`;
+                    }
+                }
+                
+                // Add to score
+                score += 5;
+                updateScore();
+                
+                // Check if step is complete
+                if (newWidth >= 100) {
+                    completeStep();
+                }
+            }
+        });
+        
+        // Complete current step
+        function completeStep() {
+            currentStep++;
+            
+            if (currentStep < currentRecipe.steps.length) {
+                loadRecipeStep();
+            } else {
+                // Recipe complete!
+                score += 100;
+                updateScore();
+                recipeStep.textContent = "Recipe complete! Great job!";
+                actionButton.textContent = 'Next Recipe';
+                actionButton.style.display = 'block';
+                
+                // Move to next recipe or end game
+                const nextRecipeIndex = (recipes.indexOf(currentRecipe) + 1;
+                if (nextRecipeIndex < recipes.length) {
+                    currentRecipe = recipes[nextRecipeIndex];
+                } else {
+                    // No more recipes
+                    actionButton.textContent = 'Play Again';
+                }
+                
+                currentStep = 0;
+            }
+        }
+        
+        // Handle action button clicks
+        actionButton.addEventListener('click', () => {
+            const step = currentRecipe.steps[currentStep];
+            
+            if (!gameActive) {
+                initGame();
+                return;
+            }
+            
+            if (step.action === 'select') {
+                if (selectedIngredients.length === step.count) {
+                    completeStep();
+                } else {
+                    alert(`Please select ${step.count} ingredients first!`);
+                }
+            } else if (step.action === 'serve') {
+                completeStep();
+            } else if (actionButton.textContent === 'Next Recipe' || 
+                      actionButton.textContent === 'Play Again') {
+                initGame();
+            }
+        });
+        
+        // End game
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            recipeStep.textContent = `Time's up! Final score: ${score}`;
+            actionButton.textContent = 'Play Again';
+            actionButton.style.display = 'block';
+        }
+        
+        // Start with instructions
+        recipeTitle.textContent = "Welcome to Cooking Chef!";
+        recipeStep.textContent = "Click Start Cooking to begin";
+        actionButton.textContent = 'Start Cooking';
+    </script>
+</body>
+</html>

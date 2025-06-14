@@ -1,0 +1,94 @@
+import random
+from typing import List, Tuple
+
+class EndlessWordle:
+    def __init__(self):
+        # List of 5-letter words (you can expand this list)
+        self.word_list = [
+            'apple', 'brave', 'crane', 'drape', 'eagle', 'flame', 'grape', 
+            'house', 'image', 'jolly', 'knife', 'light', 'mouse', 'noble', 
+            'olive', 'pride', 'queen', 'river', 'snake', 'table', 'umbra', 
+            'vivid', 'whale', 'xerox', 'yacht', 'zebra'
+        ]
+        self.current_word = self._get_random_word()
+        self.guesses = []
+        
+    def _get_random_word(self) -> str:
+        """Select a random word from the word list"""
+        return random.choice(self.word_list)
+    
+    def _validate_guess(self, guess: str) -> bool:
+        """Check if the guess is valid (5 letters and in word list)"""
+        return len(guess) == 5 and guess.lower() in self.word_list
+    
+    def _evaluate_guess(self, guess: str) -> List[Tuple[str, str]]:
+        """
+        Evaluate the guess against the current word
+        Returns a list of tuples (letter, feedback)
+        Feedback can be: 'correct', 'present', 'absent'
+        """
+        feedback = []
+        for i, letter in enumerate(guess.lower()):
+            if letter == self.current_word[i]:
+                feedback.append((letter, 'correct'))
+            elif letter in self.current_word:
+                feedback.append((letter, 'present'))
+            else:
+                feedback.append((letter, 'absent'))
+        return feedback
+    
+    def make_guess(self, guess: str) -> List[Tuple[str, str]]:
+        """Make a guess and get feedback"""
+        if not self._validate_guess(guess):
+            raise ValueError("Invalid guess - must be a 5-letter word from the word list")
+        
+        feedback = self._evaluate_guess(guess)
+        self.guesses.append((guess, feedback))
+        
+        # If guessed correctly, select a new word
+        if guess.lower() == self.current_word:
+            self.current_word = self._get_random_word()
+            self.guesses = []
+        
+        return feedback
+    
+    def display_feedback(self, feedback: List[Tuple[str, str]]) -> str:
+        """Convert feedback to colored string for display"""
+        colors = {
+            'correct': '🟩',
+            'present': '🟨',
+            'absent': '⬛'
+        }
+        return ' '.join(colors[fb] for _, fb in feedback)
+    
+    def play(self):
+        """Play the game in the console"""
+        print("Welcome to Endless Wordle!")
+        print("Guess a 5-letter word. You'll get feedback after each guess.")
+        print("🟩 = correct letter in correct position")
+        print("🟨 = correct letter in wrong position")
+        print("⬛ = letter not in word")
+        print("Type 'quit' to exit the game\n")
+        
+        while True:
+            guess = input("Enter your guess: ").lower()
+            
+            if guess == 'quit':
+                print("Thanks for playing!")
+                break
+            
+            try:
+                feedback = self.make_guess(guess)
+                print(self.display_feedback(feedback))
+                
+                if guess == self.current_word:
+                    print(f"Correct! The word was {self.current_word}")
+                    print("Starting a new word...\n")
+                    
+            except ValueError as e:
+                print(e)
+                continue
+
+if __name__ == "__main__":
+    game = EndlessWordle()
+    game.play()
