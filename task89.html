@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Quiz Adventure</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #fce4ec);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: #4a148c;
+    }
+
+    #story {
+      font-size: 1.2em;
+      max-width: 600px;
+      margin-bottom: 20px;
+      color: #333;
+      background-color: #ffffffc2;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+
+    #photo {
+      margin-top: 15px;
+    }
+
+  #photo img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #aaa;
+  }
+
+    button {
+      background-color: #ff80ab;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff4081;
+    }
+
+    .choice {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌍 Mini Quiz Adventure</h1>
+  <div id="story">
+    <p>Do you want to go to the New World or the Old World?</p>
+  </div>
+  <div id="photo"></div>
+  <div class="choice" id="choices">
+    <button onclick="goToNewWorld()">New World</button>
+    <button onclick="goToOldWorld()">Old World</button>
+  </div>
+
+  <script>
+    function updatePhoto(url, alt) {
+      document.getElementById('photo').innerHTML = `<img src="${url}" alt="${alt}">`;
+    }
+
+    function goToNewWorld() {
+      document.getElementById('story').innerHTML = "<p>Oceans crossed, dreams rose—forests sang, cities sparked, cultures mingled—hope bloomed where old maps once faded to myth. <br>Where would you like to go next?</p>";
+      updatePhoto("https://i.gocollette.com/img/destination-page/europe/europe-continent/europe-ms2.jpg?h=720&w=1280&la=en-CA", "The Roman Colosseum");
+      document.getElementById('choices').innerHTML = `
+        <button onclick="europe()">Europe</button>
+        <button onclick="asia()">Asia</button>
+        <button onclick="africa()">Africa</button>
+      `;
+    }
+
+    function goToOldWorld() {
+      document.getElementById('story').innerHTML = "<p>Ancient lands spoke—Rome’s stones, Nile’s myths, India’s spices, Athens’ thoughts—threads weaving the Old World’s enduring soul. Where would you like to go?</p>";
+      updatePhoto("https://cdn.enjoytravel.com/img/Big7Enjoy/en/travel-news/places-to-visit/the-10-most-visited-cities-in-north-america/cities-in-north-america-vancouver-canada.webp", "North America");
+      document.getElementById('choices').innerHTML = `
+        <button onclick="northAmerica()">North America</button>
+        <button onclick="southAmerica()">South America</button>
+     
+      `;
+    }
+
+    function europe() {
+      document.getElementById('story').innerHTML = "<p>Castles crown green hills, cathedrals echo stories, languages weave legacy—Europe breathes history, art, and culture in every step.</p>";
+      updatePhoto("https://live.worldtourismforum.net/uploads/London%20offers%20an%20unparalleled%20travel%20experience.jpg", "London, United Kingdom, Europe");
+      document.getElementById('choices').innerHTML = "";
+    }
+
+    function asia() {
+      document.getElementById('story').innerHTML = "<p>Mountains meet monsoons, temples rise above cities—Asia pulses with ancient wisdom, modern marvels, and boundless cultural rhythm.</p>";
+      updatePhoto("https://www.pelago.com/img/destinations/seoul/hero-image-xlarge.webp", "Seoul, South Korea, Asia");
+      document.getElementById('choices').innerHTML = "";
+    }
+
+    function africa() {
+      document.getElementById('story').innerHTML = "<p>Savannas stretch wide, lions roam free, drums echo—Africa thrives with heritage, heart, and the rhythm of beginnings.</p>";
+      updatePhoto("https://images.theconversation.com/files/294788/original/file-20190930-194866-1xzz818.jpg?ixlib=rb-4.1.0&q=45&auto=format&w=1356&h=668&fit=crop", "Lagos, Nigeria, Africa");
+      document.getElementById('choices').innerHTML = "";
+    }
+
+
+    function northAmerica() {
+      document.getElementById('story').innerHTML = "<p>Mountains to metropolises, North America pulses with innovation, vast wilds, diverse voices, and stories carved in every landscape.</p>";
+      updatePhoto("https://upload.wikimedia.org/wikipedia/commons/e/e3/Kheops-Pyramid.jpg", "Great Pyramid of Giza");
+      document.getElementById('choices').innerHTML = "";
+    }
+
+    function southAmerica() {
+      document.getElementById('story').innerHTML = "<p>Rainforests breathe life, Andes touch clouds—South America dances with color, culture, and echoes of ancient civilizations.</p>";
+      updatePhoto("https://cdn.britannica.com/47/153447-050-EA01DEDF/Sand-dunes-Nile-River-Egypt.jpg", "Cruising the Nile");
+      document.getElementById('choices').innerHTML = "";
+    }
+  </script>
+</body>
+</html>

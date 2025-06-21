@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Travel the World Adventure</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #fce4ec);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: #4a148c;
+    }
+
+    #story {
+      font-size: 1.2em;
+      max-width: 600px;
+      margin-bottom: 20px;
+      color: #333;
+      background-color: #ffffffc2;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+
+    #photo {
+      margin-top: 15px;
+    }
+
+  #photo img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #aaa;
+  }
+
+    button {
+      background-color: #ff80ab;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff4081;
+    }
+
+    .choice {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌍 Travel the World Adventure</h1>
+  <div id="story">
+    <p>You’re at the airport, passport in hand. Where will you fly to first?</p>
+  </div>
+  <div id="photo"></div>
+  <div class="choice" id="choices">
+    <button onclick="goToParis()">Paris</button>
+    <button onclick="goToCairo()">Cairo</button>
+  </div>
+
+  <script>
+    function updatePhoto(url, alt) {
+      document.getElementById('photo').innerHTML = `<img src="${url}" alt="${alt}">`;
+    }
+
+    function goToParis() {
+      document.getElementById('story').innerHTML = "<p>You land in Paris, the City of Light. Do you want to see the Eiffel Tower or enjoy a café by the Seine?</p>";
+      updatePhoto("https://upload.wikimedia.org/wikipedia/commons/e/e6/Paris_Night.jpg", "Paris skyline at night");
+      document.getElementById('choices').innerHTML = `
+        <button onclick="eiffelTower()">Eiffel Tower</button>
+        <button onclick="seineCafe()">Café by the Seine</button>
+      `;
+    }
+
+    function goToCairo() {
+      document.getElementById('story').innerHTML = "<p>Welcome to Cairo! Do you want to visit the Pyramids or cruise on the Nile?</p>";
+      updatePhoto("https://cdn.britannica.com/46/189746-050-C790AE3F/Skyline-Cairo.jpg", "View of Cairo");
+      document.getElementById('choices').innerHTML = `
+        <button onclick="seePyramids()">Pyramids</button>
+        <button onclick="nileCruise()">Nile Cruise</button>
+      `;
+    }
+
+    function eiffelTower() {
+      document.getElementById('story').innerHTML = "<p>You climb the Eiffel Tower and gaze over the rooftops of Paris—it’s magical.</p>";
+      updatePhoto("https://upload.wikimedia.org/wikipedia/commons/a/a8/Tour_Eiffel_Wikimedia_Commons.jpg", "View from Eiffel Tower");
+      document.getElementById('choices').innerHTML = "";
+    }
+
+    function seineCafe() {
+      document.getElementById('story').innerHTML = "<p>You sip espresso by the river, watching boats and lovers pass by. Paris at its finest.</p>";
+      updatePhoto("https://www.exp1.com/wp-content/uploads/sites/7/2020/07/Seine-River-in-Paris.jpg", "Café by the Seine");
+      document.getElementById('choices').innerHTML = "";
+    }
+
+    function seePyramids() {
+      document.getElementById('story').innerHTML = "<p>You stand in awe before the ancient Pyramids of Giza, the desert sun warming your face.</p>";
+      updatePhoto("https://upload.wikimedia.org/wikipedia/commons/e/e3/Kheops-Pyramid.jpg", "Great Pyramid of Giza");
+      document.getElementById('choices').innerHTML = "";
+    }
+
+    function nileCruise() {
+      document.getElementById('story').innerHTML = "<p>You sail the Nile, palm trees drifting past as a cool breeze lifts your spirit.</p>";
+      updatePhoto("https://cdn.britannica.com/47/153447-050-EA01DEDF/Sand-dunes-Nile-River-Egypt.jpg", "Cruising the Nile");
+      document.getElementById('choices').innerHTML = "";
+    }
+  </script>
+</body>
+</html>
