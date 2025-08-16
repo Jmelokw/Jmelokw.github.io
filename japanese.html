@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Learn Japanese! 🌸</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ffebf3;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #ff6b9e;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .character-card {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            margin: 10px;
+            background-color: #fff2cc;
+            border-radius: 10px;
+            font-size: 40px;
+            line-height: 80px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        
+        .character-card:hover {
+            transform: scale(1.1);
+            background-color: #ffd966;
+        }
+        
+        .selected {
+            background-color: #b5e8a3 !important;
+        }
+        
+        #question {
+            font-size: 24px;
+            margin: 20px;
+            color: #5a5a5a;
+        }
+        
+        #options {
+            margin: 20px;
+        }
+        
+        .option {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #a3d8ff;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .option:hover {
+            background-color: #70c1ff;
+        }
+        
+        #feedback {
+            font-size: 24px;
+            margin: 20px;
+            min-height: 30px;
+        }
+        
+        #score {
+            font-size: 20px;
+            color: #ff6b9e;
+        }
+        
+        #next-btn {
+            padding: 10px 20px;
+            background-color: #ff9e9e;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        #next-btn:hover {
+            background-color: #ff7b7b;
+        }
+        
+        .stars {
+            font-size: 30px;
+            color: gold;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Let's Learn Japanese! 🌸</h1>
+        <p>Match the Japanese character to its sound!</p>
+        
+        <div id="score">Score: <span id="score-value">0</span> / <span id="total-questions">0</span></div>
+        <div id="stars" class="stars"></div>
+        
+        <div id="question"></div>
+        <div id="character-display" style="font-size: 60px; margin: 20px;"></div>
+        
+        <div id="options"></div>
+        
+        <div id="feedback"></div>
+        <button id="next-btn" style="display: none;">Next Question ➡️</button>
+    </div>
+
+    <script>
+        // Japanese characters & their sounds (for small talk)
+        const japaneseChars = [
+            { char: "あ", sound: "a", meaning: "(like 'ah')" },
+            { char: "い", sound: "i", meaning: "(like 'ee')" },
+            { char: "う", sound: "u", meaning: "(like 'oo')" },
+            { char: "え", sound: "e", meaning: "(like 'eh')" },
+            { char: "お", sound: "o", meaning: "(like 'oh')" },
+            { char: "か", sound: "ka", meaning: "(like 'car')" },
+            { char: "こ", sound: "ko", meaning: "(like 'koala')" },
+            { char: "ん", sound: "n", meaning: "(like 'n' in 'noon')" },
+            { char: "に", sound: "ni", meaning: "(like 'knee')" },
+            { char: "は", sound: "ha", meaning: "(like 'hah')" }
+        ];
+
+        // Simple Japanese phrases (for small talk)
+        const phrases = [
+            { char: "こんにちは", sound: "Konnichiwa", meaning: "Hello" },
+            { char: "ありがとう", sound: "Arigatou", meaning: "Thank you" },
+            { char: "はい", sound: "Hai", meaning: "Yes" },
+            { char: "いいえ", sound: "Iie", meaning: "No" },
+            { char: "おはよう", sound: "Ohayou", meaning: "Good morning" }
+        ];
+
+        let currentQuestion = {};
+        let score = 0;
+        let totalQuestions = 0;
+        let gameMode = "characters"; // "characters" or "phrases"
+
+        // DOM elements
+        const questionEl = document.getElementById("question");
+        const characterDisplayEl = document.getElementById("character-display");
+        const optionsEl = document.getElementById("options");
+        const feedbackEl = document.getElementById("feedback");
+        const nextBtn = document.getElementById("next-btn");
+        const scoreValueEl = document.getElementById("score-value");
+        const totalQuestionsEl = document.getElementById("total-questions");
+        const starsEl = document.getElementById("stars");
+
+        // Start the game
+        function startGame() {
+            score = 0;
+            totalQuestions = 0;
+            updateScore();
+            loadQuestion();
+        }
+
+        // Load a new question
+        function loadQuestion() {
+            feedbackEl.textContent = "";
+            nextBtn.style.display = "none";
+            optionsEl.innerHTML = "";
+
+            // Alternate between characters and phrases
+            gameMode = Math.random() > 0.5 ? "characters" : "phrases";
+            
+            if (gameMode === "characters") {
+                // Pick a random Japanese character
+                const randomIndex = Math.floor(Math.random() * japaneseChars.length);
+                currentQuestion = japaneseChars[randomIndex];
+                questionEl.textContent = "What does this character sound like?";
+                characterDisplayEl.textContent = currentQuestion.char;
+                
+                // Generate 3 random options (1 correct, 2 wrong)
+                const options = [currentQuestion.sound];
+                while (options.length < 3) {
+                    const wrongChar = japaneseChars[Math.floor(Math.random() * japaneseChars.length)];
+                    if (!options.includes(wrongChar.sound)) {
+                        options.push(wrongChar.sound);
+                    }
+                }
+                
+                // Shuffle options
+                options.sort(() => Math.random() - 0.5);
+                
+                // Display options
+                options.forEach(option => {
+                    const optionEl = document.createElement("div");
+                    optionEl.className = "option";
+                    optionEl.textContent = option;
+                    optionEl.addEventListener("click", () => checkAnswer(option));
+                    optionsEl.appendChild(optionEl);
+                });
+            } else {
+                // Pick a random phrase
+                const randomIndex = Math.floor(Math.random() * phrases.length);
+                currentQuestion = phrases[randomIndex];
+                questionEl.textContent = "What does this phrase mean?";
+                characterDisplayEl.textContent = currentQuestion.char;
+                
+                // Generate 3 random options (1 correct, 2 wrong)
+                const options = [currentQuestion.meaning];
+                while (options.length < 3) {
+                    const wrongPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+                    if (!options.includes(wrongPhrase.meaning)) {
+                        options.push(wrongPhrase.meaning);
+                    }
+                }
+                
+                // Shuffle options
+                options.sort(() => Math.random() - 0.5);
+                
+                // Display options
+                options.forEach(option => {
+                    const optionEl = document.createElement("div");
+                    optionEl.className = "option";
+                    optionEl.textContent = option;
+                    optionEl.addEventListener("click", () => checkAnswer(option));
+                    optionsEl.appendChild(optionEl);
+                });
+            }
+            
+            totalQuestions++;
+            updateScore();
+        }
+
+        // Check if the answer is correct
+        function checkAnswer(selectedOption) {
+            const isCorrect = 
+                (gameMode === "characters" && selectedOption === currentQuestion.sound) ||
+                (gameMode === "phrases" && selectedOption === currentQuestion.meaning);
+            
+            if (isCorrect) {
+                feedbackEl.textContent = "Correct! 🎉";
+                feedbackEl.style.color = "green";
+                score++;
+                updateScore();
+            } else {
+                feedbackEl.textContent = gameMode === "characters" 
+                    ? `Oops! It's "${currentQuestion.sound}" (${currentQuestion.meaning})` 
+                    : `Oops! It means "${currentQuestion.meaning}"`;
+                feedbackEl.style.color = "red";
+            }
+            
+            // Disable options after answering
+            const allOptions = document.querySelectorAll(".option");
+            allOptions.forEach(opt => {
+                opt.style.pointerEvents = "none";
+            });
+            
+            nextBtn.style.display = "inline-block";
+        }
+
+        // Update score display
+        function updateScore() {
+            scoreValueEl.textContent = score;
+            totalQuestionsEl.textContent = totalQuestions;
+            
+            // Show stars based on performance
+            starsEl.innerHTML = "";
+            const starCount = Math.floor((score / Math.max(1, totalQuestions)) * 5);
+            for (let i = 0; i < starCount; i++) {
+                starsEl.innerHTML += "⭐";
+            }
+        }
+
+        // Event listeners
+        nextBtn.addEventListener("click", loadQuestion);
+
+        // Start the game when page loads
+        window.onload = startGame;
+    </script>
+</body>
+</html>

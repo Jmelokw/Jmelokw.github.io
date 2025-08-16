@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Personality Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f0f0;
+      color: #333;
+      text-align: center;
+    }
+    .page {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      padding: 40px;
+    }
+    .page.active {
+      display: block;
+    }
+    .page.fade-in {
+      opacity: 1;
+    }
+    .question {
+      margin: 20px 0;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div id="quiz"></div>
+  <div id="results" class="page"></div>
+
+  <script>
+    const quizData = [
+      {q: "Which continent would you like to travel to?", options: ["Asia", "Europe", "North America", "South America", "Africa", "Oceania", "Antarctica"]},
+      {q: "Do you prefer warm or cold climates?", options: ["Warm", "Cold"]},
+      {q: "Do you enjoy beaches or mountains more?", options: ["Beaches", "Mountains"]},
+      {q: "Do you like exploring cities or countryside?", options: ["Cities", "Countryside"]},
+      {q: "Would you rather travel somewhere popular or hidden?", options: ["Popular", "Hidden"]},
+    ];
+
+    const countryMapping = {
+      "Asia": {
+        "Warm": { "Beaches": { "Cities": { "Popular": "Thailand", "Hidden": "Philippines" }, "Countryside": { "Popular": "Sri Lanka", "Hidden": "Indonesia" } }, "Mountains": { "Cities": { "Popular": "Japan", "Hidden": "Nepal" }, "Countryside": { "Popular": "India", "Hidden": "Bhutan" } } },
+        "Cold": { "Beaches": { "Cities": { "Popular": "South Korea", "Hidden": "Japan" }, "Countryside": { "Popular": "China", "Hidden": "Mongolia" } }, "Mountains": { "Cities": { "Popular": "Nepal", "Hidden": "Tibet" }, "Countryside": { "Popular": "Bhutan", "Hidden": "Kazakhstan" } } }
+      },
+      "Europe": {
+        "Warm": { "Beaches": { "Cities": { "Popular": "Spain", "Hidden": "Portugal" }, "Countryside": { "Popular": "Italy", "Hidden": "Greece" } }, "Mountains": { "Cities": { "Popular": "France", "Hidden": "Switzerland" }, "Countryside": { "Popular": "Austria", "Hidden": "Norway" } } },
+        "Cold": { "Beaches": { "Cities": { "Popular": "Sweden", "Hidden": "Finland" }, "Countryside": { "Popular": "Iceland", "Hidden": "Denmark" } }, "Mountains": { "Cities": { "Popular": "Poland", "Hidden": "Czech Republic" }, "Countryside": { "Popular": "Hungary", "Hidden": "Scotland" } } }
+      },
+      "North America": {
+        "Warm": { "Beaches": { "Cities": { "Popular": "Mexico", "Hidden": "United States" }, "Countryside": { "Popular": "Canada", "Hidden": "Bahamas" } }, "Mountains": { "Cities": { "Popular": "United States", "Hidden": "Canada" }, "Countryside": { "Popular": "Mexico", "Hidden": "Greenland" } } },
+        "Cold": { "Beaches": { "Cities": { "Popular": "Canada", "Hidden": "USA" }, "Countryside": { "Popular": "Greenland", "Hidden": "Iceland" } }, "Mountains": { "Cities": { "Popular": "Canada", "Hidden": "United States" }, "Countryside": { "Popular": "Greenland", "Hidden": "Alaska" } } }
+      },
+      "South America": {
+        "Warm": { "Beaches": { "Cities": { "Popular": "Brazil", "Hidden": "Colombia" }, "Countryside": { "Popular": "Argentina", "Hidden": "Chile" } }, "Mountains": { "Cities": { "Popular": "Peru", "Hidden": "Bolivia" }, "Countryside": { "Popular": "Ecuador", "Hidden": "Venezuela" } } },
+        "Cold": { "Beaches": { "Cities": { "Popular": "Chile", "Hidden": "Argentina" }, "Countryside": { "Popular": "Peru", "Hidden": "Bolivia" } }, "Mountains": { "Cities": { "Popular": "Ecuador", "Hidden": "Chile" }, "Countryside": { "Popular": "Bolivia", "Hidden": "Argentina" } } }
+      },
+      "Africa": {
+        "Warm": { "Beaches": { "Cities": { "Popular": "Egypt", "Hidden": "Morocco" }, "Countryside": { "Popular": "Kenya", "Hidden": "Tanzania" } }, "Mountains": { "Cities": { "Popular": "South Africa", "Hidden": "Ethiopia" }, "Countryside": { "Popular": "Uganda", "Hidden": "Rwanda" } } },
+        "Cold": { "Beaches": { "Cities": { "Popular": "Morocco", "Hidden": "South Africa" }, "Countryside": { "Popular": "Kenya", "Hidden": "Ethiopia" } }, "Mountains": { "Cities": { "Popular": "Ethiopia", "Hidden": "Morocco" }, "Countryside": { "Popular": "Rwanda", "Hidden": "Tanzania" } } }
+      },
+      "Oceania": {
+        "Warm": { "Beaches": { "Cities": { "Popular": "Fiji", "Hidden": "Maldives" }, "Countryside": { "Popular": "Australia", "Hidden": "New Zealand" } }, "Mountains": { "Cities": { "Popular": "New Zealand", "Hidden": "Australia" }, "Countryside": { "Popular": "Fiji", "Hidden": "Tahiti" } } },
+        "Cold": { "Beaches": { "Cities": { "Popular": "New Zealand", "Hidden": "Australia" }, "Countryside": { "Popular": "Fiji", "Hidden": "Tahiti" } }, "Mountains": { "Cities": { "Popular": "New Zealand", "Hidden": "Australia" }, "Countryside": { "Popular": "Fiji", "Hidden": "Tahiti" } } }
+      },
+      "Antarctica": {
+        "Cold": { "Beaches": { "Cities": { "Popular": "Antarctica", "Hidden": "Antarctica" }, "Countryside": { "Popular": "Antarctica", "Hidden": "Antarctica" } }, "Mountains": { "Cities": { "Popular": "Antarctica", "Hidden": "Antarctica" }, "Countryside": { "Popular": "Antarctica", "Hidden": "Antarctica" } } }
+      }
+    };
+
+    let currentQuestion = 0;
+    const answers = [];
+    const quizContainer = document.getElementById('quiz');
+    const resultsContainer = document.getElementById('results');
+
+    function fadeOut(element, callback) {
+      element.classList.remove('fade-in');
+      setTimeout(() => {
+        element.classList.remove('active');
+        if (callback) callback();
+      }, 800);
+    }
+
+    function fadeIn(element) {
+      element.classList.add('active');
+      setTimeout(() => element.classList.add('fade-in'), 50);
+    }
+
+    function showQuestion(index) {
+      quizContainer.innerHTML = '';
+      const page = document.createElement('div');
+      page.classList.add('page');
+
+      const question = document.createElement('div');
+      question.className = 'question';
+      question.textContent = quizData[index].q;
+
+      page.appendChild(question);
+
+      quizData[index].options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => {
+          answers.push(opt);
+          fadeOut(page, nextQuestion);
+        };
+        page.appendChild(btn);
+      });
+
+      quizContainer.appendChild(page);
+      fadeIn(page);
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        showQuestion(currentQuestion);
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      quizContainer.innerHTML = '';
+      resultsContainer.innerHTML = '';
+
+      const continent = answers[0];
+      const climate = answers[1];
+      const terrain = answers[2];
+      const area = answers[3];
+      const popularity = answers[4];
+
+      let country = "Unknown";
+      if (
+        countryMapping[continent] &&
+        countryMapping[continent][climate] &&
+        countryMapping[continent][climate][terrain] &&
+        countryMapping[continent][climate][terrain][area] &&
+        countryMapping[continent][climate][terrain][area][popularity]
+      ) {
+        country = countryMapping[continent][climate][terrain][area][popularity];
+      }
+
+      const resultPage = document.createElement('div');
+      resultPage.classList.add('page');
+      resultPage.innerHTML = `<h2>Your next travel destination should be:</h2><h1>${country}</h1>`;
+
+      resultsContainer.appendChild(resultPage);
+      fadeIn(resultsContainer);
+      fadeIn(resultPage);
+    }
+
+    showQuestion(currentQuestion);
+  </script>
+</body>
+</html>
