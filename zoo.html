@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Tycoon Zoo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #4ecdc4, #556270);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 0 #556270;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background-color: #f7f7f7;
+            font-size: 1.2rem;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .main-content {
+            display: flex;
+            min-height: 500px;
+        }
+        
+        .zoo-display {
+            flex: 3;
+            padding: 20px;
+            background-color: #e9f7ef;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-content: flex-start;
+        }
+        
+        .animal {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            position: relative;
+        }
+        
+        .animal:hover {
+            transform: scale(1.05);
+        }
+        
+        .animal-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .animal-name {
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .controls {
+            flex: 2;
+            padding: 20px;
+            background-color: #f0f7ff;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border-left: 2px solid #ddd;
+        }
+        
+        .control-section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #4ecdc4;
+            padding-bottom: 5px;
+        }
+        
+        .animal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .animal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .animal-item:hover {
+            background-color: #e0f7fa;
+        }
+        
+        button {
+            padding: 8px 15px;
+            background-color: #4ecdc4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2a9088;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .upgrade-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .upgrade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        
+        .message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .visitor {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: walk 15s linear;
+            opacity: 0;
+        }
+        
+        @keyframes walk {
+            0% {
+                left: -50px;
+                opacity: 1;
+            }
+            100% {
+                left: calc(100% + 50px);
+                opacity: 1;
+            }
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #4ecdc4;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .level-info {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Animal Tycoon Zoo</h1>
+            <p>Build the ultimate zoo and become an animal tycoon!</p>
+        </div>
+        
+        <div class="stats">
+            <div class="money">Money: $<span id="money">1000</span></div>
+            <div class="level">Level: <span id="level">1</span>/50</div>
+            <div class="visitors">Visitors: <span id="visitors">0</span></div>
+            <div class="ticket-price">Ticket: $<span id="ticket-price">10</span></div>
+        </div>
+        
+        <div class="main-content">
+            <div class="zoo-display" id="zoo-display">
+                <!-- Animals will appear here -->
+            </div>
+            
+            <div class="controls">
+                <div class="control-section">
+                    <h2>Buy Animals</h2>
+                    <div class="animal-list" id="animal-list">
+                        <!-- Animal items will be added here -->
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h2>Zoo Upgrades</h2>
+                    <div class="upgrade-list" id="upgrade-list">
+                        <!-- Upgrade items will be added here -->
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h2>Progress</h2>
+                    <div class="level-info">Next Level: <span id="next-level">5</span> visitors</div>
+                    <div class="progress-bar">
+                        <div class="progress" id="level-progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="message" id="message"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game state
+            const gameState = {
+                money: 1000,
+                level: 1,
+                visitors: 0,
+                ticketPrice: 10,
+                nextLevelAt: 5,
+                animals: [],
+                upgrades: [],
+                visitorInterval: null
+            };
+            
+            // DOM elements
+            const moneyDisplay = document.getElementById('money');
+            const levelDisplay = document.getElementById('level');
+            const visitorsDisplay = document.getElementById('visitors');
+            const ticketPriceDisplay = document.getElementById('ticket-price');
+            const nextLevelDisplay = document.getElementById('next-level');
+            const levelProgress = document.getElementById('level-progress');
+            const zooDisplay = document.getElementById('zoo-display');
+            const animalList = document.getElementById('animal-list');
+            const upgradeList = document.getElementById('upgrade-list');
+            const message = document.getElementById('message');
+            
+            // Animal data
+            const animals = [
+                { id: 1, name: "Zebra", price: 0, emoji: "🦓", income: 5, owned: 0 },
+                { id: 2, name: "Giraffe", price: 200, emoji: "🦒", income: 10, owned: 0 },
+                { id: 3, name: "Elephant", price: 500, emoji: "🐘", income: 20, owned: 0 },
+                { id: 4, name: "Lion", price: 1000, emoji: "🦁", income: 40, owned: 0 },
+                { id: 5, name: "Panda", price: 2000, emoji: "🐼", income: 80, owned: 0 },
+                { id: 6, name: "Penguin", price: 4000, emoji: "🐧", income: 160, owned: 0 },
+                { id: 7, name: "Kangaroo", price: 8000, emoji: "🦘", income: 320, owned: 0 },
+                { id: 8, name: "Tiger", price: 16000, emoji: "🐅", income: 640, owned: 0 },
+                { id: 9, name: "Gorilla", price: 32000, emoji: "🦍", income: 1280, owned: 0 },
+                { id: 10, name: "Polar Bear", price: 64000, emoji: "🐻‍❄️", income: 2560, owned: 0 }
+            ];
+            
+            // Upgrade data
+            const upgrades = [
+                { id: 1, name: "Better Signage", price: 300, effect: 5, description: "+$5 to ticket price", owned: false },
+                { id: 2, name: "Food Court", price: 1000, effect: 10, description: "+$10 to ticket price", owned: false },
+                { id: 3, name: "Gift Shop", price: 3000, effect: 20, description: "+$20 to ticket price", owned: false },
+                { id: 4, name: "Playground", price: 10000, effect: 50, description: "+$50 to ticket price", owned: false },
+                { id: 5, name: "Safari Ride", price: 30000, effect: 100, description: "+$100 to ticket price", owned: false }
+            ];
+            
+            // Initialize the game
+            function initGame() {
+                updateDisplays();
+                renderAnimalList();
+                renderUpgradeList();
+                addStartingAnimal();
+                
+                // Start visitor interval
+                gameState.visitorInterval = setInterval(addVisitor, 3000);
+                
+                // Add initial visitors
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(addVisitor, i * 1000);
+                }
+            }
+            
+            // Update all displays
+            function updateDisplays() {
+                moneyDisplay.textContent = gameState.money.toLocaleString();
+                levelDisplay.textContent = gameState.level;
+                visitorsDisplay.textContent = gameState.visitors;
+                ticketPriceDisplay.textContent = gameState.ticketPrice;
+                nextLevelDisplay.textContent = gameState.nextLevelAt;
+                
+                // Update progress bar
+                const progress = (gameState.visitors / gameState.nextLevelAt) * 100;
+                levelProgress.style.width = `${Math.min(progress, 100)}%`;
+                
+                // Check for level up
+                if (gameState.visitors >= gameState.nextLevelAt) {
+                    levelUp();
+                }
+            }
+            
+            // Render animal list
+            function renderAnimalList() {
+                animalList.innerHTML = '';
+                
+                animals.forEach(animal => {
+                    const animalItem = document.createElement('div');
+                    animalItem.className = 'animal-item';
+                    
+                    const animalInfo = document.createElement('div');
+                    animalInfo.innerHTML = `${animal.emoji} ${animal.name} - $${animal.price.toLocaleString()}`;
+                    
+                    const buyButton = document.createElement('button');
+                    buyButton.textContent = 'Buy';
+                    buyButton.disabled = gameState.money < animal.price;
+                    
+                    buyButton.addEventListener('click', () => {
+                        buyAnimal(animal.id);
+                    });
+                    
+                    animalItem.appendChild(animalInfo);
+                    animalItem.appendChild(buyButton);
+                    animalList.appendChild(animalItem);
+                });
+            }
+            
+            // Render upgrade list
+            function renderUpgradeList() {
+                upgradeList.innerHTML = '';
+                
+                upgrades.forEach(upgrade => {
+                    if (!upgrade.owned) {
+                        const upgradeItem = document.createElement('div');
+                        upgradeItem.className = 'upgrade-item';
+                        
+                        const upgradeInfo = document.createElement('div');
+                        upgradeInfo.innerHTML = `${upgrade.name} - $${upgrade.price.toLocaleString()}<br><small>${upgrade.description}</small>`;
+                        
+                        const buyButton = document.createElement('button');
+                        buyButton.textContent = 'Buy';
+                        buyButton.disabled = gameState.money < upgrade.price;
+                        
+                        buyButton.addEventListener('click', () => {
+                            buyUpgrade(upgrade.id);
+                        });
+                        
+                        upgradeItem.appendChild(upgradeInfo);
+                        upgradeItem.appendChild(buyButton);
+                        upgradeList.appendChild(upgradeItem);
+                    }
+                });
+            }
+            
+            // Add starting animal
+            function addStartingAnimal() {
+                const zebra = animals[0];
+                zebra.owned++;
+                gameState.animals.push({...zebra});
+                
+                const animalElement = createAnimalElement(zebra);
+                zooDisplay.appendChild(animalElement);
+            }
+            
+            // Create animal element
+            function createAnimalElement(animal) {
+                const animalElement = document.createElement('div');
+                animalElement.className = 'animal';
+                animalElement.innerHTML = `
+                    <div class="animal-icon">${animal.emoji}</div>
+                    <div class="animal-name">${animal.name}</div>
+                `;
+                return animalElement;
+            }
+            
+            // Buy animal
+            function buyAnimal(animalId) {
+                const animal = animals[animalId - 1];
+                
+                if (gameState.money >= animal.price) {
+                    gameState.money -= animal.price;
+                    animal.owned++;
+                    gameState.animals.push({...animal});
+                    
+                    const animalElement = createAnimalElement(animal);
+                    zooDisplay.appendChild(animalElement);
+                    
+                    showMessage(`You bought a ${animal.name}! ${animal.emoji}`);
+                    updateDisplays();
+                    renderAnimalList();
+                    renderUpgradeList();
+                }
+            }
+            
+            // Buy upgrade
+            function buyUpgrade(upgradeId) {
+                const upgrade = upgrades[upgradeId - 1];
+                
+                if (gameState.money >= upgrade.price) {
+                    gameState.money -= upgrade.price;
+                    upgrade.owned = true;
+                    gameState.ticketPrice += upgrade.effect;
+                    gameState.upgrades.push({...upgrade});
+                    
+                    showMessage(`You bought ${upgrade.name}! Ticket price increased.`);
+                    updateDisplays();
+                    renderUpgradeList();
+                }
+            }
+            
+            // Add visitor
+            function addVisitor() {
+                gameState.visitors++;
+                gameState.money += gameState.ticketPrice;
+                
+                // Create visitor animation
+                const visitor = document.createElement('div');
+                visitor.className = 'visitor';
+                visitor.textContent = '👨';
+                visitor.style.top = `${Math.random() * 80 + 10}%`;
+                
+                zooDisplay.appendChild(visitor);
+                
+                // Remove visitor after animation
+                setTimeout(() => {
+                    visitor.remove();
+                }, 15000);
+                
+                updateDisplays();
+            }
+            
+            // Level up
+            function levelUp() {
+                if (gameState.level < 50) {
+                    gameState.level++;
+                    gameState.nextLevelAt = Math.floor(gameState.nextLevelAt * 1.5);
+                    
+                    showMessage(`Level Up! You reached level ${gameState.level}!`);
+                    updateDisplays();
+                    
+                    // Increase visitor frequency every 5 levels
+                    if (gameState.level % 5 === 0) {
+                        clearInterval(gameState.visitorInterval);
+                        const newInterval = Math.max(500, 3000 - (gameState.level * 50));
+                        gameState.visitorInterval = setInterval(addVisitor, newInterval);
+                    }
+                } else {
+                    showMessage("Congratulations! You've reached the maximum level!");
+                }
+            }
+            
+            // Show message
+            function showMessage(text) {
+                message.textContent = text;
+                message.style.opacity = 1;
+                
+                setTimeout(() => {
+                    message.style.opacity = 0;
+                }, 3000);
+            }
+            
+            // Start the game
+            initGame();
+        });
+    </script>
+</body>
+</html>

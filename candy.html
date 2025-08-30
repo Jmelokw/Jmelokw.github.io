@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Candy Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #FF5E62, #FF9966);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 0 #FF9966;
+            margin-bottom: 10px;
+        }
+        
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background-color: #FFD166;
+            font-size: 1.5rem;
+            color: #333;
+        }
+        
+        .classroom {
+            padding: 30px;
+            background-color: #f0f0f0;
+            position: relative;
+            min-height: 400px;
+        }
+        
+        .teacher-desk {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 50px;
+            background-color: #8D5524;
+            border-radius: 10px;
+        }
+        
+        .teacher {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: transform 0.5s ease-in-out;
+            z-index: 10;
+        }
+        
+        .teacher.facing-board {
+            transform: translateX(-50%) rotateY(180deg);
+        }
+        
+        .blackboard {
+            width: 300px;
+            height: 200px;
+            background-color: #000;
+            color: white;
+            margin: 0 auto 30px;
+            padding: 15px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .blackboard::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+        }
+        
+        .math-problem {
+            text-align: center;
+            font-size: 1.8rem;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .student-desk {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 150px;
+            height: 80px;
+            background-color: #8D5524;
+            border-radius: 10px;
+        }
+        
+        .student {
+            position: absolute;
+            bottom: 100px;
+            left: 70px;
+            z-index: 5;
+        }
+        
+        .candy-bowl {
+            position: absolute;
+            bottom: 110px;
+            left: 120px;
+            width: 60px;
+            height: 60px;
+            background-color: #FF9AA2;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+        
+        .candy-bowl:hover {
+            transform: scale(1.1);
+        }
+        
+        .candy-bowl:active {
+            transform: scale(0.95);
+        }
+        
+        .controls {
+            padding: 20px;
+            text-align: center;
+            background-color: #06D6A0;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: #FFD166;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #FFB74D;
+            transform: translateY(-3px);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .instructions {
+            padding: 20px;
+            background-color: #118AB2;
+            color: white;
+            text-align: center;
+        }
+        
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            display: none;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        .candy {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: float 2s ease-in-out;
+            opacity: 0;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .candy-count {
+            position: absolute;
+            bottom: 130px;
+            left: 140px;
+            font-size: 1.2rem;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .math-question {
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: #333;
+            line-height: 1.5;
+            text-align: left;
+        }
+        
+        .answer-input {
+            padding: 10px;
+            font-size: 1.2rem;
+            width: 100px;
+            text-align: center;
+            border: 2px solid #06D6A0;
+            border-radius: 10px;
+            margin: 10px;
+        }
+        
+        .math-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .hint {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Classroom Candy Challenge</h1>
+            <p>Eat candy without the teacher catching you!</p>
+        </div>
+        
+        <div class="score-board">
+            <div class="score">Points: <span id="points">5</span></div>
+            <div class="level">Round: <span id="round">1</span></div>
+            <div class="candies">Candies: <span id="candies">0</span></div>
+        </div>
+        
+        <div class="classroom">
+            <div class="blackboard">
+                <div class="math-problem" id="math-problem">2 + 2 = 4</div>
+            </div>
+            
+            <div class="teacher-desk"></div>
+            <div class="teacher" id="teacher">👨‍🏫</div>
+            
+            <div class="student-desk"></div>
+            <div class="student">👨‍🎓</div>
+            
+            <div class="candy-bowl" id="candy-bowl">🍬</div>
+            <div class="candy-count" id="candy-count">Click the candy bowl to eat!</div>
+            
+            <div class="message" id="message">
+                <h2 id="message-title">Game Over</h2>
+                <p id="message-text">You got caught eating candy!</p>
+                <button id="restart-button">Play Again</button>
+            </div>
+            
+            <div class="message" id="math-message">
+                <h2>Math Challenge!</h2>
+                <p>Answer correctly to regain your point!</p>
+                <div class="math-question" id="math-question"></div>
+                <input type="number" class="answer-input" id="answer-input" placeholder="Answer">
+                <div class="math-buttons">
+                    <button id="submit-math">Submit</button>
+                    <button id="skip-math">Skip</button>
+                </div>
+                <div class="hint" id="math-hint"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="start-button">Start Game</button>
+            <button id="eat-button">Eat Candy Quickly</button>
+        </div>
+        
+        <div class="instructions">
+            <p>You start with 5 points. Each time the teacher catches you eating candy, you lose a point!</p>
+            <p>When the teacher is facing the board, it's safe to eat candy. When he turns around, stop eating!</p>
+            <p>If you lose a point, answer a math question correctly to get it back!</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const teacher = document.getElementById('teacher');
+            const candyBowl = document.getElementById('candy-bowl');
+            const pointsDisplay = document.getElementById('points');
+            const roundDisplay = document.getElementById('round');
+            const candiesDisplay = document.getElementById('candies');
+            const mathProblem = document.getElementById('math-problem');
+            const message = document.getElementById('message');
+            const mathMessage = document.getElementById('math-message');
+            const messageTitle = document.getElementById('message-title');
+            const messageText = document.getElementById('message-text');
+            const restartButton = document.getElementById('restart-button');
+            const startButton = document.getElementById('start-button');
+            const eatButton = document.getElementById('eat-button');
+            const candyCount = document.getElementById('candy-count');
+            const mathQuestion = document.getElementById('math-question');
+            const answerInput = document.getElementById('answer-input');
+            const submitMath = document.getElementById('submit-math');
+            const skipMath = document.getElementById('skip-math');
+            const mathHint = document.getElementById('math-hint');
+            
+            let points = 5;
+            let round = 1;
+            let candiesEaten = 0;
+            let teacherInterval;
+            let isFacingBoard = true;
+            let gameActive = false;
+            let teacherSpeed = 2000; // milliseconds
+            let currentMathAnswer = null;
+            
+            // Math problems for the blackboard
+            const mathProblems = [
+                "2 + 2 = 4",
+                "5 × 3 = 15",
+                "10 ÷ 2 = 5",
+                "7 - 4 = 3",
+                "3² + 4² = 5²",
+                "8 × 7 = 56",
+                "12 ÷ 4 = 3",
+                "9 - 5 = 4",
+                "6 × 9 = 54",
+                "15 + 23 = 38"
+            ];
+            
+            // Word problems for regaining points
+            const wordProblems = [
+                {
+                    question: "A plate of chicken rice costs $4 while a plate of spaghetti costs $7. Bob ordered plates of chicken rice and spaghetti in the ratio 2:5 for himself. He paid $258 in total. How many plates of chicken rice did he order?",
+                    answer: 12,
+                    hint: "Let 2x be chicken rice plates and 5x be spaghetti plates. Then 4*(2x) + 7*(5x) = 258"
+                },
+                {
+                    question: "The ratio of apples to oranges in a basket is 3:8. If there are 44 more oranges than apples, how many apples are there?",
+                    answer: 12,
+                    hint: "If apples are 3x and oranges are 8x, then 8x - 3x = 44"
+                },
+                {
+                    question: "A car travels 180 km in 3 hours. How long will it take to travel 300 km at the same speed?",
+                    answer: 5,
+                    hint: "First find speed: 180km/3h = 60km/h. Then time = 300km / 60km/h"
+                },
+                {
+                    question: "The sum of three consecutive even numbers is 78. What is the largest of these numbers?",
+                    answer: 28,
+                    hint: "Let the numbers be x, x+2, x+4. Then x + (x+2) + (x+4) = 78"
+                },
+                {
+                    question: "A store sells shirts for $15 each and pants for $25 each. Sarah bought 10 items and paid $210. How many shirts did she buy?",
+                    answer: 4,
+                    hint: "Let s be shirts and p be pants. Then s + p = 10 and 15s + 25p = 210"
+                },
+                {
+                    question: "John is twice as old as Mary. In 5 years, the sum of their ages will be 55. How old is John now?",
+                    answer: 30,
+                    hint: "Let Mary's age = x, John's age = 2x. In 5 years: (x+5) + (2x+5) = 55"
+                },
+                {
+                    question: "A rectangle has a length that is 3 times its width. If the perimeter is 64 cm, what is the area?",
+                    answer: 192,
+                    hint: "Let width = w, length = 3w. Perimeter = 2(w + 3w) = 64. Then area = w * 3w"
+                },
+                {
+                    question: "If 5 workers can complete a task in 12 days, how many days will it take 3 workers to complete the same task?",
+                    answer: 20,
+                    hint: "Total work = 5 workers * 12 days = 60 worker-days. Time = 60 worker-days / 3 workers"
+                }
+            ];
+            
+            // Start game button
+            startButton.addEventListener('click', startGame);
+            
+            // Restart game button
+            restartButton.addEventListener('click', startGame);
+            
+            // Eat candy button
+            eatButton.addEventListener('click', eatCandy);
+            
+            // Click on candy bowl
+            candyBowl.addEventListener('click', eatCandy);
+            
+            // Math answer submission
+            submitMath.addEventListener('click', checkMathAnswer);
+            skipMath.addEventListener('click', closeMathMessage);
+            
+            // Allow pressing Enter to submit math answer
+            answerInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkMathAnswer();
+                }
+            });
+            
+            function startGame() {
+                points = 5;
+                round = 1;
+                candiesEaten = 0;
+                teacherSpeed = 2000;
+                gameActive = true;
+                
+                updateDisplays();
+                message.style.display = 'none';
+                mathMessage.style.display = 'none';
+                startButton.style.display = 'none';
+                
+                // Start teacher movement
+                clearInterval(teacherInterval);
+                teacherInterval = setInterval(toggleTeacherDirection, teacherSpeed);
+            }
+            
+            function toggleTeacherDirection() {
+                if (!gameActive) return;
+                
+                isFacingBoard = !isFacingBoard;
+                
+                if (isFacingBoard) {
+                    teacher.classList.add('facing-board');
+                    mathProblem.textContent = mathProblems[Math.floor(Math.random() * mathProblems.length)];
+                } else {
+                    teacher.classList.remove('facing-board');
+                }
+            }
+            
+            function eatCandy() {
+                if (!gameActive) return;
+                
+                // Create candy animation
+                const candy = document.createElement('div');
+                candy.className = 'candy';
+                candy.innerHTML = '🍬';
+                candy.style.left = `${100 + Math.random() * 50}px`;
+                candy.style.bottom = '100px';
+                document.querySelector('.classroom').appendChild(candy);
+                
+                // Remove candy after animation
+                setTimeout(() => {
+                    candy.remove();
+                }, 2000);
+                
+                // If teacher is facing the class, you get caught!
+                if (!isFacingBoard) {
+                    points--;
+                    updateDisplays();
+                    
+                    if (points <= 0) {
+                        endGame(false);
+                        return;
+                    }
+                    
+                    // Show warning message and math challenge
+                    candyCount.textContent = "Teacher caught you! -1 point";
+                    candyCount.style.color = 'red';
+                    setTimeout(() => {
+                        candyCount.textContent = "Click the candy bowl to eat!";
+                        candyCount.style.color = '#333';
+                    }, 2000);
+                    
+                    // Show math question to regain point
+                    showMathQuestion();
+                } else {
+                    candiesEaten++;
+                    updateDisplays();
+                    
+                    // Show success message
+                    candyCount.textContent = "Yum! +1 candy";
+                    candyCount.style.color = 'green';
+                    setTimeout(() => {
+                        candyCount.textContent = "Click the candy bowl to eat!";
+                        candyCount.style.color = '#333';
+                    }, 2000);
+                    
+                    // Increase difficulty every 5 candies
+                    if (candiesEaten % 5 === 0) {
+                        round++;
+                        teacherSpeed = Math.max(500, teacherSpeed - 200);
+                        clearInterval(teacherInterval);
+                        teacherInterval = setInterval(toggleTeacherDirection, teacherSpeed);
+                    }
+                }
+            }
+            
+            function showMathQuestion() {
+                const randomIndex = Math.floor(Math.random() * wordProblems.length);
+                const problem = wordProblems[randomIndex];
+                
+                mathQuestion.textContent = problem.question;
+                currentMathAnswer = problem.answer;
+                mathHint.textContent = "Hint: " + problem.hint;
+                answerInput.value = "";
+                
+                // Pause the game
+                clearInterval(teacherInterval);
+                gameActive = false;
+                
+                // Show math message
+                mathMessage.style.display = 'block';
+                answerInput.focus();
+            }
+            
+            function checkMathAnswer() {
+                const userAnswer = parseInt(answerInput.value);
+                
+                if (isNaN(userAnswer)) {
+                    alert("Please enter a number!");
+                    return;
+                }
+                
+                if (userAnswer === currentMathAnswer) {
+                    // Correct answer - regain point
+                    points++;
+                    updateDisplays();
+                    
+                    // Show success message
+                    candyCount.textContent = "Correct! +1 point back";
+                    candyCount.style.color = 'green';
+                    setTimeout(() => {
+                        candyCount.textContent = "Click the candy bowl to eat!";
+                        candyCount.style.color = '#333';
+                    }, 2000);
+                } else {
+                    // Wrong answer
+                    candyCount.textContent = "Wrong answer! Try to be more careful!";
+                    candyCount.style.color = 'red';
+                    setTimeout(() => {
+                        candyCount.textContent = "Click the candy bowl to eat!";
+                        candyCount.style.color = '#333';
+                    }, 2000);
+                }
+                
+                closeMathMessage();
+            }
+            
+            function closeMathMessage() {
+                mathMessage.style.display = 'none';
+                
+                // Resume the game
+                gameActive = true;
+                teacherInterval = setInterval(toggleTeacherDirection, teacherSpeed);
+            }
+            
+            function updateDisplays() {
+                pointsDisplay.textContent = points;
+                roundDisplay.textContent = round;
+                candiesDisplay.textContent = candiesEaten;
+            }
+            
+            function endGame(win) {
+                gameActive = false;
+                clearInterval(teacherInterval);
+                
+                message.style.display = 'block';
+                startButton.style.display = 'inline-block';
+                
+                if (win) {
+                    messageTitle.textContent = "You Win!";
+                    messageText.textContent = `You ate ${candiesEaten} candies without getting caught!`;
+                } else {
+                    messageTitle.textContent = "Game Over";
+                    messageText.textContent = "You got caught too many times!";
+                }
+            }
+            
+            // Initialize
+            updateDisplays();
+            teacher.classList.add('facing-board');
+        });
+    </script>
+</body>
+</html>

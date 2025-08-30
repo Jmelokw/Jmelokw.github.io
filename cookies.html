@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Baking Adventure 🍪</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        body {
+            background-color: #ffe8d6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #7b5530;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 0 #ffd1dc;
+        }
+        
+        .subtitle {
+            color: #fd8a8a;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .recipe-card {
+            background-color: #f8edeb;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: left;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .recipe-card h2 {
+            color: #7b5530;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .recipe-card ul {
+            list-style-type: none;
+            padding: 10px;
+        }
+        
+        .recipe-card li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ingredients {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .ingredient {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ingredient:hover {
+            transform: translateY(-5px);
+        }
+        
+        .mixing-bowl {
+            width: 200px;
+            height: 200px;
+            background-color: #f8edeb;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 0 0 5px #ffd1dc;
+            overflow: hidden;
+        }
+        
+        .bowl-content {
+            font-size: 1.5rem;
+            color: #7b5530;
+        }
+        
+        .oven {
+            width: 200px;
+            height: 150px;
+            background-color: #9d8189;
+            border-radius: 15px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .oven-door {
+            width: 180px;
+            height: 130px;
+            background-color: #4a4a4a;
+            border: 5px solid #ffb4a2;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            background-color: #fd8a8a;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            background-color: #ff9c9c;
+            transform: translateY(-2px);
+        }
+        
+        .cookie {
+            font-size: 2rem;
+            position: absolute;
+            transition: all 0.5s;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #f8edeb;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #fd8a8a;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            background-color: #ffd1dc;
+            border-radius: 50px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .decoration-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .decoration {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 1.5rem;
+        }
+        
+        .score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ffd1dc;
+            padding: 10px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: #7b5530;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cookie Baking Adventure 🍪</h1>
+        <div class="subtitle">Follow the recipe to bake delicious cookies!</div>
+        
+        <div class="score">Cookies: <span id="cookie-count">0</span></div>
+        
+        <div class="game-area">
+            <div class="recipe-card">
+                <h2><span>📝</span> Current Recipe: Chocolate Chip Cookies</h2>
+                <ul>
+                    <li><span>🥣</span> Add 2 cups flour</li>
+                    <li><span>🧈</span> Add 1 cup butter</li>
+                    <li><span>🍫</span> Add 1 cup chocolate chips</li>
+                    <li><span>🥚</span> Add 2 eggs</li>
+                    <li><span>🍶</span> Add 1 tsp vanilla</li>
+                </ul>
+            </div>
+            
+            <div class="ingredients">
+                <div class="ingredient" style="background-color: #f8e7d1;" onclick="addIngredient('flour')">
+                    <span>🥣</span>
+                    Flour
+                </div>
+                <div class="ingredient" style="background-color: #ffdf94;" onclick="addIngredient('butter')">
+                    <span>🧈</span>
+                    Butter
+                </div>
+                <div class="ingredient" style="background-color: #7b5530; color: white;" onclick="addIngredient('chocolate')">
+                    <span>🍫</span>
+                    Chocolate
+                </div>
+                <div class="ingredient" style="background-color: #fcf8e8;" onclick="addIngredient('egg')">
+                    <span>🥚</span>
+                    Egg
+                </div>
+                <div class="ingredient" style="background-color: #f2d0a4;" onclick="addIngredient('vanilla')">
+                    <span>🍶</span>
+                    Vanilla
+                </div>
+            </div>
+            
+            <div class="mixing-bowl">
+                <div class="bowl-content" id="bowl-content">Empty bowl</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="mixing-progress"></div>
+            </div>
+            
+            <div class="controls">
+                <button onclick="mixIngredients()">Mix Ingredients</button>
+                <button onclick="resetBowl()">Reset Bowl</button>
+            </div>
+            
+            <div class="oven">
+                <div class="oven-door" onclick="bakeCookies()">
+                    Put in Oven
+                </div>
+            </div>
+            
+            <div class="decoration-options">
+                <div class="decoration" style="background-color: #fd8a8a;" onclick="decorate('sprinkles')">✨</div>
+                <div class="decoration" style="background-color: #ffd1dc;" onclick="decorate('icing')">🍬</div>
+                <div class="decoration" style="background-color: #b5e48c;" onclick="decorate('nuts')">🥜</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="message" id="message"></div>
+
+    <script>
+        let ingredientsAdded = {
+            flour: 0,
+            butter: 0,
+            chocolate: 0,
+            egg: 0,
+            vanilla: 0
+        };
+        
+        let mixed = false;
+        let baked = false;
+        let cookieCount = 0;
+        
+        function addIngredient(ingredient) {
+            if (mixed) {
+                showMessage("You've already mixed the ingredients!");
+                return;
+            }
+            
+            if (baked) {
+                showMessage("You've already baked cookies! Reset to make more.");
+                return;
+            }
+            
+            ingredientsAdded[ingredient]++;
+            updateBowlDisplay();
+            showMessage(`Added ${ingredient}!`);
+        }
+        
+        function updateBowlDisplay() {
+            const bowlContent = document.getElementById('bowl-content');
+            let content = "";
+            
+            for (const [ingredient, count] of Object.entries(ingredientsAdded)) {
+                if (count > 0) {
+                    content += `${getEmoji(ingredient)}${count} `;
+                }
+            }
+            
+            bowlContent.innerHTML = content || "Empty bowl";
+        }
+        
+        function getEmoji(ingredient) {
+            const emojis = {
+                flour: "🥣",
+                butter: "🧈",
+                chocolate: "🍫",
+                egg: "🥚",
+                vanilla: "🍶"
+            };
+            return emojis[ingredient] || "";
+        }
+        
+        function mixIngredients() {
+            if (mixed) {
+                showMessage("You already mixed the ingredients!");
+                return;
+            }
+            
+            if (baked) {
+                showMessage("You've already baked cookies! Reset to make more.");
+                return;
+            }
+            
+            // Check if all ingredients are added in correct proportions
+            if (ingredientsAdded.flour === 2 && 
+                ingredientsAdded.butter === 1 && 
+                ingredientsAdded.chocolate === 1 && 
+                ingredientsAdded.egg === 2 && 
+                ingredientsAdded.vanilla === 1) {
+                
+                // Show mixing animation
+                const progressBar = document.getElementById('mixing-progress');
+                let width = 0;
+                const interval = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(interval);
+                        mixed = true;
+                        showMessage("Perfect mix! Now bake your cookies! 🍪");
+                    } else {
+                        width += 5;
+                        progressBar.style.width = width + '%';
+                    }
+                }, 100);
+                
+            } else {
+                showMessage("Your recipe isn't quite right. Check the instructions! ❌");
+            }
+        }
+        
+        function bakeCookies() {
+            if (!mixed) {
+                showMessage("You need to mix the ingredients first!");
+                return;
+            }
+            
+            if (baked) {
+                showMessage("Cookies are already baking!");
+                return;
+            }
+            
+            baked = true;
+            showMessage("Baking cookies... 🕐");
+            
+            // Simulate baking time
+            setTimeout(() => {
+                showMessage("Cookies are ready! Decorations added! 🎉");
+                cookieCount += 6; // 6 cookies per batch
+                document.getElementById('cookie-count').textContent = cookieCount;
+                
+                // Show cookies animation
+                const oven = document.querySelector('.oven');
+                for (let i = 0; i < 6; i++) {
+                    const cookie = document.createElement('div');
+                    cookie.className = 'cookie';
+                    cookie.innerHTML = '🍪';
+                    cookie.style.left = (Math.random() * 80 + 10) + '%';
+                    cookie.style.bottom = '0px';
+                    oven.appendChild(cookie);
+                    
+                    // Animate cookies jumping out
+                    setTimeout(() => {
+                        cookie.style.bottom = (Math.random() * 100 + 50) + 'px';
+                    }, i * 200);
+                }
+            }, 2000);
+        }
+        
+        function decorate(type) {
+            if (!baked) {
+                showMessage("You need to bake cookies first!");
+                return;
+            }
+            
+            const decorations = {
+                sprinkles: "✨",
+                icing: "🍬",
+                nuts: "🥜"
+            };
+            
+            showMessage(`Added ${type} decoration! ${decorations[type]}`);
+        }
+        
+        function resetBowl() {
+            for (const ingredient in ingredientsAdded) {
+                ingredientsAdded[ingredient] = 0;
+            }
+            mixed = false;
+            baked = false;
+            updateBowlDisplay();
+            document.getElementById('mixing-progress').style.width = '0%';
+            
+            // Remove cookies
+            const cookies = document.querySelectorAll('.cookie');
+            cookies.forEach(cookie => cookie.remove());
+            
+            showMessage("Bowl reset! Start a new batch! 🔄");
+        }
+        
+        function showMessage(text) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.style.opacity = 1;
+            
+            setTimeout(() => {
+                message.style.opacity = 0;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
