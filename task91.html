@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>B5 Homeostasis & Response – Multiple Choice Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #60a5fa;
+      --correct: #10b981;
+      --wrong: #ef4444;
+      --border: #1f2937;
+    }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: linear-gradient(180deg, #0b1020, var(--bg));
+      color: var(--text);
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { margin-bottom: 1.5rem; }
+    h1 { font-size: 1.75rem; margin: 0 0 0.25rem; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    .controls { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+    button {
+      background: var(--accent); color: #0b1020; border: none; border-radius: 8px;
+      padding: 0.6rem 0.9rem; font-weight: 600; cursor: pointer;
+    }
+    button.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+    .q-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+    .q-title { font-weight: 700; }
+    .topic { color: var(--muted); font-size: 0.9rem; }
+    .options { display: grid; gap: 0.5rem; margin: 0.6rem 0; }
+    label.option {
+      display: grid; grid-template-columns: 24px 1fr; gap: 0.6rem; align-items: start;
+      padding: 0.55rem 0.6rem; border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+    }
+    input[type="radio"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); cursor: pointer; }
+    .feedback { font-size: 0.92rem; margin-top: 0.4rem; min-height: 1.25rem; }
+    .feedback.correct { color: var(--correct); }
+    .feedback.wrong { color: var(--wrong); }
+    .footer { margin-top: 2rem; color: var(--muted); font-size: 0.9rem; }
+    .score { font-weight: 700; }
+    .hidden { display: none; }
+    .pill { display: inline-block; border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.85rem; color: var(--muted); }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f7fb; --card: #ffffff; --text: #0f172a; --muted: #475569;
+        --accent: #2563eb; --correct: #059669; --wrong: #dc2626; --border: #e5e7eb;
+      }
+      body { background: #f5f7fb; }
+      button { color: white; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>B5 Homeostasis & Response – Multiple Choice Quiz</h1>
+      <div class="subtitle">Paper 2 directed revision – all B5 questions, simplified. Select your answers and click “Check answers”.</div>
+      <div class="controls">
+        <button id="checkBtn">Check answers</button>
+        <button id="showBtn" class="secondary">Show all correct answers</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+    </header>
+
+    <div id="quiz">
+      <!-- Homeostasis basics -->
+      <div class="card" data-id="q1" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">1) What is homeostasis?</div>
+          <div class="topic pill">Homeostasis basics</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q1" value="A">A. The process of growth in cells</label>
+          <label class="option"><input type="radio" name="q1" value="B">B. Keeping internal conditions steady for cells and enzymes</label>
+          <label class="option"><input type="radio" name="q1" value="C">C. Making hormones in glands</label>
+          <label class="option"><input type="radio" name="q1" value="D">D. Filtering blood in kidneys</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q2" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">2) Which list shows things controlled by homeostasis?</div>
+          <div class="topic pill">Homeostasis basics</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q2" value="A">A. Heart rate, digestion, breathing</label>
+          <label class="option"><input type="radio" name="q2" value="B">B. Food intake, sleep, movement</label>
+          <label class="option"><input type="radio" name="q2" value="C">C. Red blood cell count, bone density, hair growth</label>
+          <label class="option"><input type="radio" name="q2" value="D">D. Blood glucose, body temperature, water level</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q3" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">3) Which two control systems manage body responses?</div>
+          <div class="topic pill">Homeostasis basics</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q3" value="A">A. Immune and skeletal systems</label>
+          <label class="option"><input type="radio" name="q3" value="B">B. Digestive and circulatory systems</label>
+          <label class="option"><input type="radio" name="q3" value="C">C. Nervous (fast) and endocrine/hormonal (slow)</label>
+          <label class="option"><input type="radio" name="q3" value="D">D. Respiratory and urinary systems</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q4" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">4) What are receptors?</div>
+          <div class="topic pill">Homeostasis basics</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q4" value="A">A. Cells that detect changes (stimuli)</label>
+          <label class="option"><input type="radio" name="q4" value="B">B. Glands that release hormones</label>
+          <label class="option"><input type="radio" name="q4" value="C">C. Muscles that cause movement</label>
+          <label class="option"><input type="radio" name="q4" value="D">D. Neurones that carry impulses</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q5" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">5) What do coordination centres do?</div>
+          <div class="topic pill">Homeostasis basics</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q5" value="A">A. Produce hormones to change body conditions</label>
+          <label class="option"><input type="radio" name="q5" value="B">B. Receive and process information from receptors</label>
+          <label class="option"><input type="radio" name="q5" value="C">C. Contract to move body parts</label>
+          <label class="option"><input type="radio" name="q5" value="D">D. Store glucose as glycogen</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q6" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">6) What are effectors?</div>
+          <div class="topic pill">Homeostasis basics</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q6" value="A">A. Organs that filter blood</label>
+          <label class="option"><input type="radio" name="q6" value="B">B. Cells that detect light and sound</label>
+          <label class="option"><input type="radio" name="q6" value="C">C. Muscles or glands that bring about responses</label>
+          <label class="option"><input type="radio" name="q6" value="D">D. Parts of the brain that store memory</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Nervous system -->
+      <div class="card" data-id="q7" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">7) What does the nervous system do?</div>
+          <div class="topic pill">Nervous system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q7" value="A">A. Produces hormones</label>
+          <label class="option"><input type="radio" name="q7" value="B">B. Enables reactions to surroundings and coordinates behaviour</label>
+          <label class="option"><input type="radio" name="q7" value="C">C. Breaks down food</label>
+          <label class="option"><input type="radio" name="q7" value="D">D. Pumps blood around the body</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q8" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">8) How does information pass along neurones?</div>
+          <div class="topic pill">Nervous system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q8" value="A">A. As electrical impulses</label>
+          <label class="option"><input type="radio" name="q8" value="B">B. As sound waves</label>
+          <label class="option"><input type="radio" name="q8" value="C">C. As chemical digestion</label>
+          <label class="option"><input type="radio" name="q8" value="D">D. As light signals</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q9" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">9) What is the central nervous system (CNS)?</div>
+          <div class="topic pill">Nervous system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q9" value="A">A. Heart and lungs</label>
+          <label class="option"><input type="radio" name="q9" value="B">B. Pancreas and kidneys</label>
+          <label class="option"><input type="radio" name="q9" value="C">C. Bones and muscles</label>
+          <label class="option"><input type="radio" name="q9" value="D">D. Brain and spinal cord</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q10" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">10) What does the CNS do?</div>
+        <div class="topic pill">Nervous system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q10" value="A">A. Stores glycogen</label>
+          <label class="option"><input type="radio" name="q10" value="B">B. Coordinates responses of effectors</label>
+          <label class="option"><input type="radio" name="q10" value="C">C. Produces red blood cells</label>
+          <label class="option"><input type="radio" name="q10" value="D">D. Filters waste from blood</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q11" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">11) What do effectors do when coordinated by the CNS?</div>
+          <div class="topic pill">Nervous system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q11" value="A">A. Muscles contract or glands secrete hormones</label>
+          <label class="option"><input type="radio" name="q11" value="B">B. Bones grow</label>
+          <label class="option"><input type="radio" name="q11" value="C">C. Nerves digest food</label>
+          <label class="option"><input type="radio" name="q11" value="D">D. Kidneys reabsorb water</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q12" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">12) What is a reflex action?</div>
+          <div class="topic pill">Reflexes</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q12" value="A">A. A conscious thought process</label>
+          <label class="option"><input type="radio" name="q12" value="B">B. A slow hormonal response</label>
+          <label class="option"><input type="radio" name="q12" value="C">C. An automatic response that does not involve the conscious brain</label>
+          <label class="option"><input type="radio" name="q12" value="D">D. A voluntary muscle movement</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Endocrine system -->
+      <div class="card" data-id="q13" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">13) What is the endocrine system?</div>
+          <div class="topic pill">Endocrine system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q13" value="A">A. System that circulates blood</label>
+          <label class="option"><input type="radio" name="q13" value="B">B. Glands that release hormones into the blood</label>
+          <label class="option"><input type="radio" name="q13" value="C">C. Organs that filter waste</label>
+          <label class="option"><input type="radio" name="q13" value="D">D. Muscles that move the skeleton</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q14" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">14) What are hormones?</div>
+          <div class="topic pill">Endocrine system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q14" value="A">A. Chemical messengers carried in the blood</label>
+          <label class="option"><input type="radio" name="q14" value="B">B. Electrical signals in neurones</label>
+          <label class="option"><input type="radio" name="q14" value="C">C. Food molecules used in respiration</label>
+          <label class="option"><input type="radio" name="q14" value="D">D. Immune cells that fight pathogens</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q15" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">15) How do hormones compare to nervous impulses?</div>
+          <div class="topic pill">Endocrine system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q15" value="A">A. Faster and shorter-lasting</label>
+          <label class="option"><input type="radio" name="q15" value="B">B. Faster and longer-lasting</label>
+          <label class="option"><input type="radio" name="q15" value="C">C. Same speed and duration</label>
+          <label class="option"><input type="radio" name="q15" value="D">D. Slower and longer-lasting</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q16" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">16) What is the pituitary gland?</div>
+          <div class="topic pill">Endocrine system</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q16" value="A">A. A gland in the neck that controls metabolism</label>
+          <label class="option"><input type="radio" name="q16" value="B">B. A gland in the kidneys that controls salt balance</label>
+          <label class="option"><input type="radio" name="q16" value="C">C. A master gland that secretes hormones and controls other glands</label>
+          <label class="option"><input type="radio" name="q16" value="D">D. A gland in the lungs that controls breathing</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Blood glucose -->
+      <div class="card" data-id="q17" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">17) Which organ monitors blood glucose?</div>
+          <div class="topic pill">Blood glucose control</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q17" value="A">A. Pancreas</label>
+          <label class="option"><input type="radio" name="q17" value="B">B. Liver</label>
+          <label class="option"><input type="radio" name="q17" value="C">C. Kidneys</label>
+          <label class="option"><input type="radio" name="q17" value="D">D. Thyroid</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q18" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">18) What happens when blood glucose is too high?</div>
+          <div class="topic pill">Blood glucose control</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q18" value="A">A. Glucagon releases glucose from glycogen</label>
+          <label class="option"><input type="radio" name="q18" value="B">B. Insulin moves glucose into cells and stores it as glycogen</label>
+          <label class="option"><input type="radio" name="q18" value="C">C. Kidneys excrete glucose directly</label>
+          <label class="option"><input type="radio" name="q18" value="D">D. Adrenaline increases glucose release</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q19" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">19) Where is excess glucose stored after insulin acts?</div>
+          <div class="topic pill">Blood glucose control</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q19" value="A">A. In blood plasma</label>
+          <label class="option"><input type="radio" name="q19" value="B">B. In sweat glands</label>
+          <label class="option"><input type="radio" name="q19" value="C">C. In the kidneys</label>
+          <label class="option"><input type="radio" name="q19" value="D">D. In the liver and muscles as glycogen</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q20" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">20) What is Type 1 diabetes?</div>
+          <div class="topic pill">Blood glucose control</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q20" value="A">A. The pancreas fails to produce sufficient insulin</label>
+          <label class="option"><input type="radio" name="q20" value="B">B. Cells no longer respond to insulin</label>
+          <label class="option"><input type="radio" name="q20" value="C">C. Excess insulin is produced</label>
+          <label class="option"><input type="radio" name="q20" value="D">D. The kidneys excrete too much glucose</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q21" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">21) How is Type 1 diabetes treated?</div>
+          <div class="topic pill">Blood glucose control</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q21" value="A">A. Antibiotics</label>
+          <label class="option"><input type="radio" name="q21" value="B">B. Insulin injections</label>
+          <label class="option"><input type="radio" name="q21" value="C">C. Iron supplements</label>
+          <label class="option"><input type="radio" name="q21" value="D">D. Increased salt intake</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q22" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">22) What is Type 2 diabetes?</div>
+          <div class="topic pill">Blood glucose control</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q22" value="A">A. Body cells no longer respond to insulin</label>
+          <label class="option"><input type="radio" name="q22" value="B">B. Pancreas produces no glucagon</label>
+          <label class="option"><input type="radio" name="q22" value="C">C. Excess urea is made</label>
+          <label class="option"><input type="radio" name="q22" value="D">D. Thyroid produces too much thyroxine</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q23" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">23) How can Type 2 diabetes be controlled?</div>
+          <div class="topic pill">Blood glucose control</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q23" value="A">A. Daily antibiotics and bed rest</label>
+          <label class="option"><input type="radio" name="q23" value="B">B. Increased sugar intake</label>
+          <label class="option"><input type="radio" name="q23" value="C">C. Carbohydrate-controlled diet and regular exercise</label>
+          <label class="option"><input type="radio" name="q23" value="D">D. High-protein supplements</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q24" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">24) What happens when blood glucose is too low?</div>
+          <div class="topic pill">Blood glucose control (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q24" value="A">A. Insulin is released to store more glycogen</label>
+          <label class="option"><input type="radio" name="q24" value="B">B. Glucagon is released to convert glycogen to glucose</label>
+          <label class="option"><input type="radio" name="q24" value="C">C. Thyroxine is released to increase metabolism</label>
+          <label class="option"><input type="radio" name="q24" value="D">D. ADH is released to increase water reabsorption</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Water & waste -->
+      <div class="card" data-id="q25" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">25) What, besides carbon dioxide, is lost when we exhale?</div>
+          <div class="topic pill">Water & waste</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q25" value="A">A. Water vapour</label>
+          <label class="option"><input type="radio" name="q25" value="B">B. Urea</label>
+          <label class="option"><input type="radio" name="q25" value="C">C. Mineral ions</label>
+          <label class="option"><input type="radio" name="q25" value="D">D. Glucose</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q26" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">26) Which substances are lost through sweating?</div>
+          <div class="topic pill">Water & waste</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q26" value="A">A. Oxygen, carbon dioxide, proteins</label>
+          <label class="option"><input type="radio" name="q26" value="B">B. Starch, fibre, bile</label>
+          <label class="option"><input type="radio" name="q26" value="C">C. Glucose, hormones, fats</label>
+          <label class="option"><input type="radio" name="q26" value="D">D. Water, ions, urea</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q27" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">27) How does the kidney make urine?</div>
+          <div class="topic pill">Water & waste</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q27" value="A">A. By converting urea into glucose</label>
+          <label class="option"><input type="radio" name="q27" value="B">B. By filtering blood and selectively reabsorbing useful substances</label>
+          <label class="option"><input type="radio" name="q27" value="C">C. By producing hormones in the nephron</label>
+          <label class="option"><input type="radio" name="q27" value="D">D. By increasing sweat production</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q28" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">28) Which hormone controls water balance?</div>
+          <div class="topic pill">Water & waste (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q28" value="A">A. Insulin</label>
+          <label class="option"><input type="radio" name="q28" value="B">B. Thyroxine</label>
+          <label class="option"><input type="radio" name="q28" value="C">C. ADH</label>
+          <label class="option"><input type="radio" name="q28" value="D">D. Testosterone</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q29" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">29) Where is ADH released from?</div>
+          <div class="topic pill">Water & waste (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q29" value="A">A. Pituitary gland</label>
+          <label class="option"><input type="radio" name="q29" value="B">B. Thyroid gland</label>
+          <label class="option"><input type="radio" name="q29" value="C">C. Adrenal gland</label>
+          <label class="option"><input type="radio" name="q29" value="D">D. Pancreas</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q30" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">30) When is ADH released?</div>
+          <div class="topic pill">Water & waste (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q30" value="A">A. When blood is too dilute</label>
+          <label class="option"><input type="radio" name="q30" value="B">B. When blood is too concentrated</label>
+          <label class="option"><input type="radio" name="q30" value="C">C. After eating protein</label>
+          <label class="option"><input type="radio" name="q30" value="D">D. During sleep</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q31" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">31) What does ADH do in the kidneys?</div>
+          <div class="topic pill">Water & waste (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q31" value="A">A. Increases water reabsorption into the blood</label>
+          <label class="option"><input type="radio" name="q31" value="B">B. Decreases glucose reabsorption</label>
+          <label class="option"><input type="radio" name="q31" value="C">C. Increases urea production</label>
+          <label class="option"><input type="radio" name="q31" value="D">D. Decreases salt reabsorption</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Kidney failure -->
+      <div class="card" data-id="q32" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">32) How can kidney failure be treated?</div>
+          <div class="topic pill">Kidneys</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q32" value="A">A. With antibiotics</label>
+          <label class="option"><input type="radio" name="q32" value="B">B. With insulin therapy</label>
+          <label class="option"><input type="radio" name="q32" value="C">C. With dialysis or transplant</label>
+          <label class="option"><input type="radio" name="q32" value="D">D. With vitamin supplements</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Puberty & reproductive hormones -->
+      <div class="card" data-id="q33" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">33) What happens during puberty?</div>
+          <div class="topic pill">Reproductive hormones</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q33" value="A">A. Reproductive hormones cause secondary sex characteristics to develop</label>
+          <label class="option"><input type="radio" name="q33" value="B">B. Kidneys start producing more urea</label>
+          <label class="option"><input type="radio" name="q33" value="C">C. Thyroxine increases sweat production</label>
+          <label class="option"><input type="radio" name="q33" value="D">D. Pancreas stops releasing insulin</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q34" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">34) Which hormone is produced in the ovaries?</div>
+          <div class="topic pill">Reproductive hormones</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q34" value="A">A. Testosterone</label>
+          <label class="option"><input type="radio" name="q34" value="B">B. Thyroxine</label>
+          <label class="option"><input type="radio" name="q34" value="C">C. Oestrogen</label>
+          <label class="option"><input type="radio" name="q34" value="D">D. Adrenaline</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q35" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">35) Which hormone is produced in the testes?</div>
+          <div class="topic pill">Reproductive hormones</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q35" value="A">A. Testosterone</label>
+          <label class="option"><input type="radio" name="q35" value="B">B. Insulin</label>
+          <label class="option"><input type="radio" name="q35" value="C">C. Progesterone</label>
+          <label class="option"><input type="radio" name="q35" value="D">D. ADH</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q36" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">36) What is ovulation?</div>
+          <div class="topic pill">Reproductive hormones</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q36" value="A">A. The process of sperm production</label>
+          <label class="option"><input type="radio" name="q36" value="B">B. The thickening of the uterus lining</label>
+          <label class="option"><input type="radio" name="q36" value="C">C. The fusion of egg and sperm</label>
+          <label class="option"><input type="radio" name="q36" value="D">D. Release of an egg about every 28 days</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q37" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">37) Which hormone causes an egg to mature?</div>
+          <div class="topic pill">Menstrual cycle</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q37" value="A">A. LH</label>
+          <label class="option"><input type="radio" name="q37" value="B">B. Progesterone</label>
+          <label class="option"><input type="radio" name="q37" value="C">C. FSH</label>
+          <label class="option"><input type="radio" name="q37" value="D">D. Adrenaline</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q38" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">38) Which hormone triggers the release of an egg?</div>
+          <div class="topic pill">Menstrual cycle</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q38" value="A">A. LH</label>
+          <label class="option"><input type="radio" name="q38" value="B">B. Insulin</label>
+          <label class="option"><input type="radio" name="q38" value="C">C. Thyroxine</label>
+          <label class="option"><input type="radio" name="q38" value="D">D. ADH</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q39" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">39) Which hormones maintain the uterus lining?</div>
+          <div class="topic pill">Menstrual cycle</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q39" value="A">A. FSH and LH</label>
+          <label class="option"><input type="radio" name="q39" value="B">B. Oestrogen and progesterone</label>
+          <label class="option"><input type="radio" name="q39" value="C">C. Insulin and glucagon</label>
+          <label class="option"><input type="radio" name="q39" value="D">D. Adrenaline and thyroxine</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Contraception -->
+      <div class="card" data-id="q40" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">40) How do oral contraceptives (the pill) work?</div>
+          <div class="topic pill">Contraception</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q40" value="A">A. Increase LH to trigger ovulation</label>
+          <label class="option"><input type="radio" name="q40" value="B">B. Inhibit FSH so no eggs mature</label>
+          <label class="option"><input type="radio" name="q40" value="C">C. Stimulate progesterone to thicken mucus only</label>
+          <label class="option"><input type="radio" name="q40" value="D">D. Reduce insulin to lower blood sugar</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q41" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">41) How do implants/injections work?</div>
+          <div class="topic pill">Contraception</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q41" value="A">A. Release oestrogen to cause ovulation</label>
+          <label class="option"><input type="radio" name="q41" value="B">B. Release insulin to stop egg release</label>
+          <label class="option"><input type="radio" name="q41" value="C">C. Release progesterone to inhibit egg maturation and release</label>
+          <label class="option"><input type="radio" name="q41" value="D">D. Release thyroxine to speed metabolism</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q42" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">42) What are barrier methods of contraception?</div>
+          <div class="topic pill">Contraception</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q42" value="A">A. Condoms and diaphragms that prevent sperm reaching the egg</label>
+          <label class="option"><input type="radio" name="q42" value="B">B. Pills that reduce FSH</label>
+          <label class="option"><input type="radio" name="q42" value="C">C. Injections that release progesterone</label>
+          <label class="option"><input type="radio" name="q42" value="D">D. Devices that release adrenaline</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q43" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">43) How do intrauterine devices (IUDs) prevent pregnancy?</div>
+          <div class="topic pill">Contraception</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q43" value="A">A. By stimulating egg release</label>
+          <label class="option"><input type="radio" name="q43" value="B">B. By killing sperm in the vagina</label>
+          <label class="option"><input type="radio" name="q43" value="C">C. By lowering body temperature</label>
+          <label class="option"><input type="radio" name="q43" value="D">D. By preventing implantation or releasing hormones</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q44" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">44) What do spermicides do?</div>
+          <div class="topic pill">Contraception</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q44" value="A">A. Stimulate ovulation</label>
+          <label class="option"><input type="radio" name="q44" value="B">B. Kill or disable sperm</label>
+          <label class="option"><input type="radio" name="q44" value="C">C. Thicken the uterus lining</label>
+          <label class="option"><input type="radio" name="q44" value="D">D. Block the oviducts permanently</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q45" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">45) Which method involves neither hormones nor devices?</div>
+          <div class="topic pill">Contraception</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q45" value="A">A. Spermicides</label>
+          <label class="option"><input type="radio" name="q45" value="B">B. IUDs</label>
+          <label class="option"><input type="radio" name="q45" value="C">C. Abstaining from intercourse around ovulation</label>
+          <label class="option"><input type="radio" name="q45" value="D">D. Combined pill</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q46" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">46) What surgical methods stop a person conceiving?</div>
+          <div class="topic pill">Contraception</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q46" value="A">A. Sterilisation (male or female)</label>
+          <label class="option"><input type="radio" name="q46" value="B">B. Removal of the thyroid</label>
+          <label class="option"><input type="radio" name="q46" value="C">C. Removal of the pancreas</label>
+          <label class="option"><input type="radio" name="q46" value="D">D. Removal of the adrenal glands</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Fertility & IVF -->
+      <div class="card" data-id="q47" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">47) Which hormones are given to encourage fertility?</div>
+          <div class="topic pill">Fertility treatments (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q47" value="A">A. Insulin and glucagon</label>
+          <label class="option"><input type="radio" name="q47" value="B">B. Adrenaline and thyroxine</label>
+          <label class="option"><input type="radio" name="q47" value="C">C. Oestrogen and progesterone</label>
+          <label class="option"><input type="radio" name="q47" value="D">D. FSH and LH</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q48" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">48) Which statement best describes IVF?</div>
+          <div class="topic pill">Fertility treatments (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q48" value="A">A. Eggs mature naturally and are fertilised in the oviduct</label>
+          <label class="option"><input type="radio" name="q48" value="B">B. Eggs are collected, fertilised in the lab, embryos inserted into womb</label>
+          <label class="option"><input type="radio" name="q48" value="C">C. Sperm are injected directly into the bloodstream</label>
+          <label class="option"><input type="radio" name="q48" value="D">D. Uterus lining is removed to prevent implantation</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q49" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">49) Which is a drawback of IVF?</div>
+          <div class="topic pill">Fertility treatments (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q49" value="A">A. It guarantees pregnancy</label>
+          <label class="option"><input type="radio" name="q49" value="B">B. It prevents multiple births</label>
+          <label class="option"><input type="radio" name="q49" value="C">C. It can be stressful, success rates are low, and multiple births can occur</label>
+          <label class="option"><input type="radio" name="q49" value="D">D. It cures Type 1 diabetes</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <!-- Adrenaline & thyroxine -->
+      <div class="card" data-id="q50" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">50) Where is adrenaline produced and when?</div>
+          <div class="topic pill">Other hormones (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q50" value="A">A. In adrenal glands during fear or stress</label>
+          <label class="option"><input type="radio" name="q50" value="B">B. In pancreas during sleep</label>
+          <label class="option"><input type="radio" name="q50" value="C">C. In thyroid after meals</label>
+          <label class="option"><input type="radio" name="q50" value="D">D. In liver during exercise only</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q51" data-ans="D">
+        <div class="q-header">
+          <div class="q-title">51) What does adrenaline do?</div>
+          <div class="topic pill">Other hormones (HT)</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q51" value="A">A. Lowers heart rate and blood sugar</label>
+          <label class="option"><input type="radio" name="q51" value="B">B. Thickens the uterus lining</label>
+          <label class="option"><input type="radio" name="q51" value="C">C. Stores glucose as glycogen</label>
+          <label class="option"><input type="radio" name="q51" value="D">D. Increases heart rate, oxygen and glucose delivery for fight or flight</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q52" data-ans="B">
+        <div class="q-header">
+          <div class="q-title">52) Which hormone stimulates metabolic rate?</div>
+          <div class="topic pill">Other hormones</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q52" value="A">A. Insulin</label>
+          <label class="option"><input type="radio" name="q52" value="B">B. Thyroxine</label>
+          <label class="option"><input type="radio" name="q52" value="C">C. Progesterone</label>
+          <label class="option"><input type="radio" name="q52" value="D">D. ADH</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q53" data-ans="C">
+        <div class="q-header">
+          <div class="q-title">53) What does thyroxine do?</div>
+          <div class="topic pill">Other hormones</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q53" value="A">A. Controls water reabsorption</label>
+          <label class="option"><input type="radio" name="q53" value="B">B. Triggers fight or flight</label>
+          <label class="option"><input type="radio" name="q53" value="C">C. Regulates metabolism and supports growth and development</label>
+          <label class="option"><input type="radio" name="q53" value="D">D. Breaks down glycogen</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+
+      <div class="card" data-id="q54" data-ans="A">
+        <div class="q-header">
+          <div class="q-title">54) How are thyroxine levels controlled?</div>
+          <div class="topic pill">Other hormones</div>
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q54" value="A">A. By negative feedback</label>
+          <label class="option"><input type="radio" name="q54" value="B">B. By positive reinforcement</label>
+          <label class="option"><input type="radio" name="q54" value="C">C. By kidney filtration</label>
+          <label class="option"><input type="radio" name="q54" value="D">D. By muscle contraction</label>
+        </div>
+        <div class="feedback hidden"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="score" id="scoreLine">Score: 0 / 54</div>
+      <div>Tip: Click “Show all correct answers” to reveal the right options for quick revision.</div>
+    </div>
+  </div>
+
+  <script>
+    function checkAnswers() {
+      const cards = document.querySelectorAll('.card');
+      let correct = 0;
+      cards.forEach(card => {
+        const ans = card.dataset.ans;
+        const chosen = card.querySelector('input[type="radio"]:checked');
+        const fb = card.querySelector('.feedback');
+        fb.classList.remove('hidden', 'correct', 'wrong');
+
+        if (!chosen) {
+          fb.textContent = 'No answer selected.';
+          fb.classList.add('wrong');
+          return;
+        }
+        if (chosen.value === ans) {
+          fb.textContent = 'Correct.';
+          fb.classList.add('correct');
+          correct++;
+        } else {
+          fb.textContent = `Incorrect. Correct answer: ${ans}.`;
+          fb.classList.add('wrong');
+        }
+      });
+      document.getElementById('scoreLine').textContent = `Score: ${correct} / ${cards.length}`;
+    }
+
+    function showAllAnswers() {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        const ans = card.dataset.ans;
+        const radios = card.querySelectorAll('input[type="radio"]');
+        radios.forEach(r => { r.checked = (r.value === ans); });
+        const fb = card.querySelector('.feedback');
+        fb.textContent = 'Correct.';
+        fb.classList.remove('hidden', 'wrong');
+        fb.classList.add('correct');
+      });
+      document.getElementById('scoreLine').textContent = `Score: ${cards.length} / ${cards.length}`;
+    }
+
+    function resetQuiz() {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        const radios = card.querySelectorAll('input[type="radio"]');
+        radios.forEach(r => { r.checked = false; });
+        const fb = card.querySelector('.feedback');
+        fb.textContent = '';
+        fb.classList.add('hidden');
+        fb.classList.remove('correct', 'wrong');
+      });
+      document.getElementById('scoreLine').textContent = `Score: 0 / ${cards.length}`;
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', checkAnswers);
+    document.getElementById('showBtn').addEventListener('click', showAllAnswers);
+    document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+  </script>
+</body>
+</html>
