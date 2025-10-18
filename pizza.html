@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Fraction Math Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #e74c3c;
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 0 #f1c40f;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #e67e22;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .score-container, .level-container {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .score {
+            color: #2ecc71;
+        }
+
+        .level {
+            color: #3498db;
+        }
+
+        .pizza-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 30px;
+        }
+
+        .pizza-base {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #f1c40f;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .pizza-crust {
+            position: absolute;
+            width: 110%;
+            height: 110%;
+            top: -5%;
+            left: -5%;
+            border-radius: 50%;
+            background: #e67e22;
+            z-index: -1;
+        }
+
+        .pizza-slice {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 0;
+            left: 0;
+            transform-origin: bottom right;
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            background: #f39c12;
+            border: 2px solid #e67e22;
+            transition: all 0.3s ease;
+        }
+
+        .pizza-topping {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .fraction-option {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #2980b9;
+        }
+
+        .fraction-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 0 #2980b9;
+        }
+
+        .fraction-option:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2980b9;
+        }
+
+        .fraction-option.correct {
+            background: #2ecc71;
+            box-shadow: 0 4px 0 #27ae60;
+        }
+
+        .fraction-option.incorrect {
+            background: #e74c3c;
+            box-shadow: 0 4px 0 #c0392b;
+        }
+
+        .feedback {
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 40px;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .correct-feedback {
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .incorrect-feedback {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            background: #9b59b6;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #8e44ad;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 0 #8e44ad;
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #8e44ad;
+        }
+
+        #next-btn {
+            background: #2ecc71;
+            box-shadow: 0 4px 0 #27ae60;
+        }
+
+        #reset-btn {
+            background: #e74c3c;
+            box-shadow: 0 4px 0 #c0392b;
+        }
+
+        .instructions {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .instructions h3 {
+            color: #e67e22;
+            margin-bottom: 10px;
+        }
+
+        .instructions p {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .pizza-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pizza Fraction Fun</h1>
+            <p class="subtitle">Identify the fraction of pizza shown!</p>
+        </header>
+
+        <div class="game-info">
+            <div class="score-container">
+                Score: <span class="score" id="score">0</span>
+            </div>
+            <div class="level-container">
+                Level: <span class="level" id="level">1</span>
+            </div>
+        </div>
+
+        <div class="pizza-container">
+            <div class="pizza-crust"></div>
+            <div class="pizza-base" id="pizza-base">
+                <!-- Pizza slices will be generated here -->
+            </div>
+        </div>
+
+        <div class="question">
+            <h2>What fraction of the pizza is shown?</h2>
+        </div>
+
+        <div class="options-container" id="options-container">
+            <!-- Fraction options will be generated here -->
+        </div>
+
+        <div class="feedback" id="feedback">
+            <!-- Feedback will be shown here -->
+        </div>
+
+        <div class="controls">
+            <button id="next-btn">Next Pizza</button>
+            <button id="reset-btn">Reset Game</button>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Play:</h3>
+            <p>1. Look at the pizza slices shown on the screen</p>
+            <p>2. Choose the correct fraction that represents the amount of pizza shown</p>
+            <p>3. Get points for correct answers</p>
+            <p>4. Advance to higher levels for more challenging fractions</p>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let score = 0;
+        let level = 1;
+        let currentFraction = { numerator: 1, denominator: 4 };
+        let correctAnswer = '';
+        let gameActive = true;
+
+        // DOM elements
+        const pizzaBase = document.getElementById('pizza-base');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackElement = document.getElementById('feedback');
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
+        const nextButton = document.getElementById('next-btn');
+        const resetButton = document.getElementById('reset-btn');
+
+        // Initialize the game
+        function init() {
+            updateScore();
+            generateNewPizza();
+            
+            // Event listeners
+            nextButton.addEventListener('click', generateNewPizza);
+            resetButton.addEventListener('click', resetGame);
+        }
+
+        // Generate a new pizza with random slices
+        function generateNewPizza() {
+            // Reset feedback and options
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+            optionsContainer.innerHTML = '';
+            pizzaBase.innerHTML = '';
+            
+            // Generate random fraction based on level
+            const denominator = getRandomDenominator();
+            const numerator = Math.floor(Math.random() * denominator) + 1;
+            
+            currentFraction = { numerator, denominator };
+            correctAnswer = `${numerator}/${denominator}`;
+            
+            // Draw pizza slices
+            drawPizzaSlices(numerator, denominator);
+            
+            // Generate answer options
+            generateOptions(numerator, denominator);
+            
+            // Enable game interactions
+            gameActive = true;
+        }
+
+        // Get random denominator based on level
+        function getRandomDenominator() {
+            const minDenominator = 2 + Math.floor(level / 3);
+            const maxDenominator = 4 + Math.floor(level / 2);
+            return Math.floor(Math.random() * (maxDenominator - minDenominator + 1)) + minDenominator;
+        }
+
+        // Draw pizza slices based on fraction
+        function drawPizzaSlices(numerator, denominator) {
+            // Add pizza toppings for visual appeal
+            addPizzaToppings();
+            
+            // Calculate angle for each slice
+            const sliceAngle = 360 / denominator;
+            
+            // Create the visible slices
+            for (let i = 0; i < numerator; i++) {
+                const slice = document.createElement('div');
+                slice.className = 'pizza-slice';
+                slice.style.transform = `rotate(${i * sliceAngle}deg)`;
+                
+                // Add some random pepperoni
+                for (let j = 0; j < 3; j++) {
+                    const topping = document.createElement('div');
+                    topping.className = 'pizza-topping';
+                    topping.style.top = `${20 + Math.random() * 30}%`;
+                    topping.style.left = `${20 + Math.random() * 30}%`;
+                    slice.appendChild(topping);
+                }
+                
+                pizzaBase.appendChild(slice);
+            }
+        }
+
+        // Add random pizza toppings
+        function addPizzaToppings() {
+            // Add some cheese (yellow circles)
+            for (let i = 0; i < 15; i++) {
+                const cheese = document.createElement('div');
+                cheese.className = 'pizza-topping';
+                cheese.style.background = '#f1c40f';
+                cheese.style.width = '10px';
+                cheese.style.height = '10px';
+                cheese.style.top = `${10 + Math.random() * 80}%`;
+                cheese.style.left = `${10 + Math.random() * 80}%`;
+                pizzaBase.appendChild(cheese);
+            }
+            
+            // Add some green peppers
+            for (let i = 0; i < 8; i++) {
+                const pepper = document.createElement('div');
+                pepper.className = 'pizza-topping';
+                pepper.style.background = '#2ecc71';
+                pepper.style.width = '15px';
+                pepper.style.height = '8px';
+                pepper.style.borderRadius = '4px';
+                pepper.style.top = `${10 + Math.random() * 80}%`;
+                pepper.style.left = `${10 + Math.random() * 80}%`;
+                pizzaBase.appendChild(pepper);
+            }
+        }
+
+        // Generate answer options
+        function generateOptions(numerator, denominator) {
+            const options = [correctAnswer];
+            
+            // Generate incorrect options
+            while (options.length < 4) {
+                let wrongNumerator, wrongDenominator;
+                
+                // Different types of wrong answers for variety
+                if (Math.random() < 0.5) {
+                    // Wrong numerator
+                    wrongNumerator = getRandomWrongNumber(numerator, denominator);
+                    wrongDenominator = denominator;
+                } else {
+                    // Wrong denominator
+                    wrongNumerator = numerator;
+                    wrongDenominator = getRandomWrongNumber(denominator, denominator);
+                }
+                
+                const wrongAnswer = `${wrongNumerator}/${wrongDenominator}`;
+                
+                // Ensure we don't have duplicate options
+                if (!options.includes(wrongAnswer) && wrongDenominator > 1) {
+                    options.push(wrongAnswer);
+                }
+            }
+            
+            // Shuffle options
+            shuffleArray(options);
+            
+            // Create option buttons
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'fraction-option';
+                button.textContent = option;
+                button.addEventListener('click', () => checkAnswer(option, button));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // Get a random wrong number that's different from the correct one
+        function getRandomWrongNumber(correct, limit) {
+            let wrong;
+            do {
+                wrong = Math.floor(Math.random() * limit) + 1;
+            } while (wrong === correct);
+            return wrong;
+        }
+
+        // Shuffle array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Check if the selected answer is correct
+        function checkAnswer(selected, button) {
+            if (!gameActive) return;
+            
+            gameActive = false;
+            
+            if (selected === correctAnswer) {
+                // Correct answer
+                button.classList.add('correct');
+                feedbackElement.textContent = 'Correct! Great job!';
+                feedbackElement.className = 'feedback correct-feedback';
+                score += level * 10;
+                updateScore();
+                
+                // Level up after 3 correct answers
+                if (score % 30 === 0) {
+                    level++;
+                    levelElement.textContent = level;
+                    feedbackElement.textContent += ` Level up! You're now at level ${level}!`;
+                }
+            } else {
+                // Incorrect answer
+                button.classList.add('incorrect');
+                feedbackElement.textContent = `Incorrect. The answer is ${correctAnswer}.`;
+                feedbackElement.className = 'feedback incorrect-feedback';
+                
+                // Highlight correct answer
+                const options = document.querySelectorAll('.fraction-option');
+                options.forEach(option => {
+                    if (option.textContent === correctAnswer) {
+                        option.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        // Update score display
+        function updateScore() {
+            scoreElement.textContent = score;
+        }
+
+        // Reset the game
+        function resetGame() {
+            score = 0;
+            level = 1;
+            updateScore();
+            levelElement.textContent = level;
+            generateNewPizza();
+        }
+
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

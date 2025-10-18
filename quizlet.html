@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Flashcards & Fill-in-the-Blanks</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(90deg, #4a00e0, #8e2de2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .input-section, .study-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #4a00e0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background: linear-gradient(90deg, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+        }
+
+        .question-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .question-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-item:last-child {
+            border-bottom: none;
+        }
+
+        .question-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .delete-btn {
+            background: #ff4b2b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .study-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .study-mode {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .card {
+            perspective: 1000px;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .fill-blank-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .blank-input {
+            width: 150px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin: 0 5px;
+        }
+
+        .result {
+            margin-top: 10px;
+            font-weight: 600;
+            min-height: 24px;
+        }
+
+        .correct {
+            color: #38ef7d;
+        }
+
+        .incorrect {
+            color: #ff4b2b;
+        }
+
+        .progress {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .input-section, .study-section {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Study Flashcards & Fill-in-the-Blanks</h1>
+            <p class="subtitle">Create your own study materials and test your knowledge!</p>
+        </header>
+
+        <div class="main-content">
+            <section class="input-section">
+                <h2>Add Questions & Answers</h2>
+                <div class="form-group">
+                    <label for="question">Question:</label>
+                    <textarea id="question" placeholder="Enter your question here..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="answer">Answer:</label>
+                    <textarea id="answer" placeholder="Enter the answer here..."></textarea>
+                </div>
+                <button id="add-btn">Add Question</button>
+
+                <h2>Your Questions</h2>
+                <div class="question-list" id="question-list">
+                    <!-- Questions will be added here dynamically -->
+                </div>
+            </section>
+
+            <section class="study-section">
+                <h2>Study Mode</h2>
+                <div class="study-controls">
+                    <button id="flashcard-btn" class="btn-secondary">Flashcards</button>
+                    <button id="fillblank-btn">Fill in the Blanks</button>
+                </div>
+
+                <div id="flashcard-mode" class="study-mode active">
+                    <div class="card" id="card">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <h3>Question</h3>
+                                <p id="card-question">Click "Start Studying" to begin</p>
+                            </div>
+                            <div class="card-back">
+                                <h3>Answer</h3>
+                                <p id="card-answer">Your answers will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="navigation">
+                        <button id="prev-btn">Previous</button>
+                        <button id="flip-btn">Flip Card</button>
+                        <button id="next-btn">Next</button>
+                    </div>
+                </div>
+
+                <div id="fillblank-mode" class="study-mode">
+                    <div class="fill-blank-container">
+                        <p class="question-text" id="fill-question">Click "Start Studying" to begin</p>
+                        <div id="answer-inputs">
+                            <!-- Input fields will be added here dynamically -->
+                        </div>
+                        <button id="check-btn">Check Answer</button>
+                        <div class="result" id="fill-result"></div>
+                    </div>
+                    <div class="navigation">
+                        <button id="fill-prev-btn">Previous</button>
+                        <button id="fill-next-btn">Next</button>
+                    </div>
+                </div>
+
+                <div class="progress">
+                    <span id="progress-text">No questions added yet</span>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <p>Study Flashcards & Fill-in-the-Blanks Game &copy; 2023</p>
+    </footer>
+
+    <script>
+        // Data structure to store questions and answers
+        let questions = JSON.parse(localStorage.getItem('studyQuestions')) || [];
+        let currentIndex = 0;
+        let currentMode = 'flashcard';
+
+        // DOM Elements
+        const questionInput = document.getElementById('question');
+        const answerInput = document.getElementById('answer');
+        const addButton = document.getElementById('add-btn');
+        const questionList = document.getElementById('question-list');
+        const flashcardBtn = document.getElementById('flashcard-btn');
+        const fillblankBtn = document.getElementById('fillblank-btn');
+        const flashcardMode = document.getElementById('flashcard-mode');
+        const fillblankMode = document.getElementById('fillblank-mode');
+        const card = document.getElementById('card');
+        const cardQuestion = document.getElementById('card-question');
+        const cardAnswer = document.getElementById('card-answer');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const flipBtn = document.getElementById('flip-btn');
+        const fillQuestion = document.getElementById('fill-question');
+        const answerInputs = document.getElementById('answer-inputs');
+        const checkBtn = document.getElementById('check-btn');
+        const fillResult = document.getElementById('fill-result');
+        const fillPrevBtn = document.getElementById('fill-prev-btn');
+        const fillNextBtn = document.getElementById('fill-next-btn');
+        const progressText = document.getElementById('progress-text');
+
+        // Initialize the app
+        function init() {
+            renderQuestionList();
+            updateStudyMode();
+            updateProgress();
+            
+            // Set up event listeners
+            addButton.addEventListener('click', addQuestion);
+            flashcardBtn.addEventListener('click', () => switchMode('flashcard'));
+            fillblankBtn.addEventListener('click', () => switchMode('fillblank'));
+            prevBtn.addEventListener('click', showPreviousQuestion);
+            nextBtn.addEventListener('click', showNextQuestion);
+            flipBtn.addEventListener('click', flipCard);
+            checkBtn.addEventListener('click', checkAnswer);
+            fillPrevBtn.addEventListener('click', showPreviousQuestion);
+            fillNextBtn.addEventListener('click', showNextQuestion);
+            
+            // Load first question if available
+            if (questions.length > 0) {
+                showQuestion(currentIndex);
+            }
+        }
+
+        // Add a new question
+        function addQuestion() {
+            const question = questionInput.value.trim();
+            const answer = answerInput.value.trim();
+            
+            if (question && answer) {
+                questions.push({ question, answer });
+                saveQuestions();
+                renderQuestionList();
+                updateProgress();
+                
+                // Clear inputs
+                questionInput.value = '';
+                answerInput.value = '';
+                
+                // If this is the first question, show it
+                if (questions.length === 1) {
+                    showQuestion(0);
+                }
+            } else {
+                alert('Please enter both a question and an answer.');
+            }
+        }
+
+        // Delete a question
+        function deleteQuestion(index) {
+            questions.splice(index, 1);
+            saveQuestions();
+            renderQuestionList();
+            updateProgress();
+            
+            // Adjust current index if needed
+            if (currentIndex >= questions.length) {
+                currentIndex = Math.max(0, questions.length - 1);
+            }
+            
+            showQuestion(currentIndex);
+        }
+
+        // Save questions to localStorage
+        function saveQuestions() {
+            localStorage.setItem('studyQuestions', JSON.stringify(questions));
+        }
+
+        // Render the list of questions
+        function renderQuestionList() {
+            questionList.innerHTML = '';
+            
+            if (questions.length === 0) {
+                questionList.innerHTML = '<p>No questions added yet. Add some above!</p>';
+                return;
+            }
+            
+            questions.forEach((q, index) => {
+                const questionItem = document.createElement('div');
+                questionItem.className = 'question-item';
+                questionItem.innerHTML = `
+                    <span class="question-text">${q.question}</span>
+                    <button class="delete-btn" data-index="${index}">Delete</button>
+                `;
+                questionList.appendChild(questionItem);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    deleteQuestion(index);
+                });
+            });
+        }
+
+        // Switch between study modes
+        function switchMode(mode) {
+            currentMode = mode;
+            updateStudyMode();
+            showQuestion(currentIndex);
+        }
+
+        // Update the active study mode
+        function updateStudyMode() {
+            if (currentMode === 'flashcard') {
+                flashcardMode.classList.add('active');
+                fillblankMode.classList.remove('active');
+                flashcardBtn.classList.add('btn-secondary');
+                fillblankBtn.classList.remove('btn-secondary');
+            } else {
+                flashcardMode.classList.remove('active');
+                fillblankMode.classList.add('active');
+                flashcardBtn.classList.remove('btn-secondary');
+                fillblankBtn.classList.add('btn-secondary');
+            }
+        }
+
+        // Show a specific question
+        function showQuestion(index) {
+            if (questions.length === 0) {
+                cardQuestion.textContent = 'No questions available. Add some questions to get started!';
+                cardAnswer.textContent = 'Add questions to see answers here.';
+                fillQuestion.textContent = 'No questions available. Add some questions to get started!';
+                answerInputs.innerHTML = '';
+                return;
+            }
+            
+            if (index < 0) index = 0;
+            if (index >= questions.length) index = questions.length - 1;
+            
+            currentIndex = index;
+            const currentQuestion = questions[currentIndex];
+            
+            // Update flashcard mode
+            card.classList.remove('flipped');
+            cardQuestion.textContent = currentQuestion.question;
+            cardAnswer.textContent = currentQuestion.answer;
+            
+            // Update fill in the blank mode
+            const { questionWithBlanks, answerKeys } = createFillInTheBlank(currentQuestion.question, currentQuestion.answer);
+            fillQuestion.innerHTML = questionWithBlanks;
+            
+            // Create input fields for blanks
+            answerInputs.innerHTML = '';
+            answerKeys.forEach((key, i) => {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'blank-input';
+                input.setAttribute('data-key', key);
+                input.setAttribute('data-index', i);
+                answerInputs.appendChild(input);
+            });
+            
+            fillResult.textContent = '';
+            updateProgress();
+        }
+
+        // Create a fill-in-the-blank version of a question
+        function createFillInTheBlank(question, answer) {
+            // Simple implementation: replace key terms with blanks
+            const words = answer.split(' ');
+            const keyWords = words.filter(word => word.length > 4).slice(0, 3);
+            
+            let questionWithBlanks = question;
+            const answerKeys = [];
+            
+            keyWords.forEach((word, index) => {
+                const key = `blank_${index}`;
+                answerKeys.push(word.toLowerCase());
+                
+                // Create a blank with the appropriate length
+                const blank = '_'.repeat(Math.min(word.length, 10));
+                questionWithBlanks = questionWithBlanks.replace(
+                    new RegExp(`\\b${word}\\b`, 'gi'), 
+                    `<input type="text" class="blank-input" data-key="${key}" data-index="${index}" placeholder="${blank}">`
+                );
+            });
+            
+            // If no replacements were made, add a generic blank at the end
+            if (answerKeys.length === 0) {
+                const key = 'blank_0';
+                answerKeys.push(answer);
+                questionWithBlanks += ` <input type="text" class="blank-input" data-key="${key}" data-index="0" placeholder="_________">`;
+            }
+            
+            return { questionWithBlanks, answerKeys };
+        }
+
+        // Check answers in fill-in-the-blank mode
+        function checkAnswer() {
+            if (questions.length === 0) return;
+            
+            const currentQuestion = questions[currentIndex];
+            const { answerKeys } = createFillInTheBlank(currentQuestion.question, currentQuestion.answer);
+            const inputs = document.querySelectorAll('#answer-inputs .blank-input');
+            
+            let allCorrect = true;
+            inputs.forEach((input, index) => {
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswer = answerKeys[index].toLowerCase();
+                
+                if (userAnswer === correctAnswer) {
+                    input.style.borderColor = '#38ef7d';
+                    input.style.backgroundColor = '#f0fff4';
+                } else {
+                    input.style.borderColor = '#ff4b2b';
+                    input.style.backgroundColor = '#fff0f0';
+                    allCorrect = false;
+                }
+            });
+            
+            if (allCorrect) {
+                fillResult.textContent = 'Correct! Well done!';
+                fillResult.className = 'result correct';
+            } else {
+                fillResult.textContent = 'Some answers are incorrect. Try again!';
+                fillResult.className = 'result incorrect';
+            }
+        }
+
+        // Show previous question
+        function showPreviousQuestion() {
+            if (currentIndex > 0) {
+                showQuestion(currentIndex - 1);
+            }
+        }
+
+        // Show next question
+        function showNextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                showQuestion(currentIndex + 1);
+            }
+        }
+
+        // Flip the flashcard
+        function flipCard() {
+            card.classList.toggle('flipped');
+        }
+
+        // Update progress text
+        function updateProgress() {
+            if (questions.length === 0) {
+                progressText.textContent = 'No questions added yet';
+            } else {
+                progressText.textContent = `Question ${currentIndex + 1} of ${questions.length}`;
+            }
+        }
+
+        // Initialize the app when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
