@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>B5 Homeostasis & Response – Multiple Choice Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #60a5fa;
+      --correct: #10b981;
+      --wrong: #ef4444;
+      --border: #1f2937;
+    }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: linear-gradient(180deg, #0b1020, var(--bg));
+      color: var(--text);
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    header { margin-bottom: 1.5rem; }
+    h1 { font-size: 1.75rem; margin: 0 0 0.25rem; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    .controls { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+    button {
+      background: var(--accent); color: #0b1020; border: none; border-radius: 8px;
+      padding: 0.6rem 0.9rem; font-weight: 600; cursor: pointer;
+    }
+    button.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+    .q-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+    .q-title { font-weight: 700; }
+    .topic { color: var(--muted); font-size: 0.9rem; }
+    .options { display: grid; gap: 0.5rem; margin: 0.6rem 0; }
+    label.option {
+      display: grid; grid-template-columns: 24px 1fr; gap: 0.6rem; align-items: start;
+      padding: 0.55rem 0.6rem; border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+    }
+    input[type="radio"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); cursor: pointer; }
+    .feedback { font-size: 0.92rem; margin-top: 0.4rem; min-height: 1.25rem; }
+    .feedback.correct { color: var(--correct); }
+    .feedback.wrong { color: var(--wrong); }
+    .footer { margin-top: 2rem; color: var(--muted); font-size: 0.9rem; }
+    .score { font-weight: 700; }
+    .hidden { display: none; }
+    .pill { display: inline-block; border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.85rem; color: var(--muted); }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f5f7fb; --card: #ffffff; --text: #0f172a; --muted: #475569;
+        --accent: #2563eb; --correct: #059669; --wrong: #dc2626; --border: #e5e7eb;
+      }
+      body { background: #f5f7fb; }
+      button { color: white; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>B5 Homeostasis & Response – Multiple Choice Quiz</h1>
+      <div class="subtitle">Paper 2 directed revision – all B5 questions, simplified. Select your answers and click “Check answers”.</div>
+      <div class="controls">
+        <button id="checkBtn">Check answers</button>
+        <button id="showBtn" class="secondary">Show all correct answers</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+    </header>
+        <div id="quiz">
+<div class="card" data-id="q55" data-ans="C">
+  <div class="q-header"><div class="q-title">55) On a cellular level what does sexual reproduction involve?</div><div class="topic pill">Inheritance</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q55" value="A">A. Only mitosis</label>
+    <label class="option"><input type="radio" name="q55" value="B">B. Copying DNA without variation</label>
+    <label class="option"><input type="radio" name="q55" value="C">C. Fusion of male and female gametes</label>
+    <label class="option"><input type="radio" name="q55" value="D">D. Producing identical offspring</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q56" data-ans="B">
+  <div class="q-header"><div class="q-title">56) What are the gametes in animals?</div><div class="topic pill">Inheritance</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q56" value="A">A. Roots and shoots</label>
+    <label class="option"><input type="radio" name="q56" value="B">B. Sperm and egg cells</label>
+    <label class="option"><input type="radio" name="q56" value="C">C. Hormones</label>
+    <label class="option"><input type="radio" name="q56" value="D">D. Enzymes</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q57" data-ans="D">
+  <div class="q-header"><div class="q-title">57) What is sexual reproduction on a genetic level?</div><div class="topic pill">Inheritance</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q57" value="A">A. Produces clones</label>
+    <label class="option"><input type="radio" name="q57" value="B">B. No mixing of genetic info</label>
+    <label class="option"><input type="radio" name="q57" value="C">C. Always identical offspring</label>
+    <label class="option"><input type="radio" name="q57" value="D">D. Mixing of genetic information leading to variation</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q58" data-ans="A">
+  <div class="q-header"><div class="q-title">58) What is the name of the process in the formation of gametes?</div><div class="topic pill">Inheritance</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q58" value="A">A. Meiosis</label>
+    <label class="option"><input type="radio" name="q58" value="B">B. Mitosis</label>
+    <label class="option"><input type="radio" name="q58" value="C">C. Fertilisation</label>
+    <label class="option"><input type="radio" name="q58" value="D">D. Translation</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q59" data-ans="C">
+  <div class="q-header"><div class="q-title">59) What is asexual reproduction?</div><div class="topic pill">Inheritance</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q59" value="A">A. Requires two parents</label>
+    <label class="option"><input type="radio" name="q59" value="B">B. Involves gamete fusion</label>
+    <label class="option"><input type="radio" name="q59" value="C">C. Involves one parent and no gamete fusion</label>
+    <label class="option"><input type="radio" name="q59" value="D">D. Always produces variation</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q60" data-ans="B">
+  <div class="q-header"><div class="q-title">60) What is the advantage of asexual reproduction?</div><div class="topic pill">Inheritance</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q60" value="A">A. Produces variation</label>
+    <label class="option"><input type="radio" name="q60" value="B">B. Produces genetically identical offspring (clones)</label>
+    <label class="option"><input type="radio" name="q60" value="C">C. Requires meiosis</label>
+    <label class="option"><input type="radio" name="q60" value="D">D. Always slower</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q61" data-ans="D">
+  <div class="q-header"><div class="q-title">61) How many chromosomes does a gamete have compared with a normal cell?</div><div class="topic pill">Inheritance</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q61" value="A">A. Same number</label>
+    <label class="option"><input type="radio" name="q61" value="B">B. Double the number</label>
+    <label class="option"><input type="radio" name="q61" value="C">C. Triple the number</label>
+    <label class="option"><input type="radio" name="q61" value="D">D. Half the number</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q62" data-ans="C">
+  <div class="q-header"><div class="q-title">62) What is mitosis?</div><div class="topic pill">Inheritance</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q62" value="A">A. Produces gametes</label>
+    <label class="option"><input type="radio" name="q62" value="B">B. Fusion of gametes</label>
+    <label class="option"><input type="radio" name="q62" value="C">C. Normal cell division for growth</label>
+    <label class="option"><input type="radio" name="q62" value="D">D. Protein synthesis</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q63" data-ans="A">
+  <div class="q-header"><div class="q-title">63) What are alleles?</div><div class="topic pill">Genetics</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q63" value="A">A. Different forms of a gene</label>
+    <label class="option"><input type="radio" name="q63" value="B">B. Proteins</label>
+    <label class="option"><input type="radio" name="q63" value="C">C. Chromosomes</label>
+    <label class="option"><input type="radio" name="q63" value="D">D. Enzymes</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q64" data-ans="B">
+  <div class="q-header"><div class="q-title">64) Which type of allele is always expressed if present?</div><div class="topic pill">Genetics</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q64" value="A">A. Recessive</label>
+    <label class="option"><input type="radio" name="q64" value="B">B. Dominant</label>
+    <label class="option"><input type="radio" name="q64" value="C">C. Neutral</label>
+    <label class="option"><input type="radio" name="q64" value="D">D. Mutated</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q65" data-ans="A">
+  <div class="q-header"><div class="q-title">65) When is a recessive allele expressed?</div><div class="topic pill">Genetics</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q65" value="A">A. Only if two copies are present</label>
+    <label class="option"><input type="radio" name="q65" value="B">B. Always</label>
+    <label class="option"><input type="radio" name="q65" value="C">C. Only in males</label>
+    <label class="option"><input type="radio" name="q65" value="D">D. Only in females</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q66" data-ans="C">
+  <div class="q-header"><div class="q-title">66) What does homozygous mean?</div><div class="topic pill">Genetics</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q66" value="A">A. Two different alleles</label>
+    <label class="option"><input type="radio" name="q66" value="B">B. No alleles</label>
+    <label class="option"><input type="radio" name="q66" value="C">C. Two identical alleles</label>
+    <label class="option"><input type="radio" name="q66" value="D">D. A mutation</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q67" data-ans="A">
+  <div class="q-header"><div class="q-title">67) What does heterozygous mean?</div><div class="topic pill">Genetics</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q67" value="A">A. Two different alleles</label>
+    <label class="option"><input type="radio" name="q67" value="B">B. Two identical alleles</label>
+    <label class="option"><input type="radio" name="q67" value="C">C. No alleles</label>
+    <label class="option"><input type="radio" name="q67" value="D">D. A mutation</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q68" data-ans="D">
+  <div class="q-header"><div class="q-title">68) Name two inherited disorders caused by alleles.</div><div class="topic pill">Genetics</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q68" value="A">A. Diabetes and asthma</label>
+    <label class="option"><input type="radio" name="q68" value="B">B. Influenza and malaria</label>
+    <label class="option"><input type="radio" name="q68" value="C">C. Cancer and arthritis</label>
+    <label class="option"><input type="radio" name="q68" value="D">D. Polydactyl (dominant) and cystic fibrosis (recessive)</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q69" data-ans="C">
+  <div class="q-header"><div class="q-title">69) How many pairs of chromosomes does a normal human cell have?</div><div class="topic pill">Chromosomes</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q69" value="A">A. 12</label>
+    <label class="option"><input type="radio" name="q69" value="B">B. 46</label>
+    <label class="option"><input type="radio" name="q69" value="C">C. 23 pairs</label>
+    <label class="option"><input type="radio" name="q69" value="D">D. 100</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q70" data-ans="A">
+  <div class="q-header"><div class="q-title">70) How many pairs of chromosomes determine sex?</div><div class="topic pill">Chromosomes</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q70" value="A">A. 1 pair</label>
+    <label class="option"><input type="radio" name="q70" value="B">B. 2 pairs</label>
+    <label class="option"><input type="radio" name="q70" value="C">C. 22 pairs</label>
+    <label class="option"><input type="radio" name="q70" value="D">D. 10 pairs</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q71" data-ans="B">
+  <div class="q-header"><div class="q-title">71) What are the sex chromosomes in males?</div><div class="topic pill">Chromosomes</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q71" value="A">A. XX</label>
+    <label class="option"><input type="radio" name="q71" value="B">B. XY</label>
+    <label class="option"><input type="radio" name="q71" value="C">C. YY</label>
+    <label class="option"><input type="radio" name="q71" value="D">D. ZZ</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+<div class="card" data-id="q72" data-ans="A">
+  <div class="q-header"><div class="q-title">72) What are the sex chromosomes in females?</div><div class="topic pill">Chromosomes</div></div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q72" value="A">A. XX</label>
+    <label class="option"><input type="radio" name="q72" value="B">B. XY</label>
+    <label class="option"><input type="radio" name="q72" value="C">C. YY</label>
+    <label class="option"><input type="radio" name="q72" value="D">D. XO</label>
+  </div><div class="feedback hidden"></div>
+</div>
+
+
+    </div>
+
+    <div class="footer">
+      <div class="score" id="scoreLine">Score: 0 / 54</div>
+      <div>Tip: Click “Show all correct answers” to reveal the right options for quick revision.</div>
+    </div>
+    <script>
+    function checkAnswers() {
+      const cards = document.querySelectorAll('.card');
+      let correct = 0;
+      cards.forEach(card => {
+        const ans = card.dataset.ans;
+        const chosen = card.querySelector('input[type="radio"]:checked');
+        const fb = card.querySelector('.feedback');
+        fb.classList.remove('hidden', 'correct', 'wrong');
+
+        if (!chosen) {
+          fb.textContent = 'No answer selected.';
+          fb.classList.add('wrong');
+          return;
+        }
+        if (chosen.value === ans) {
+          fb.textContent = 'Correct.';
+          fb.classList.add('correct');
+          correct++;
+        } else {
+          fb.textContent = `Incorrect. Correct answer: ${ans}.`;
+          fb.classList.add('wrong');
+        }
+      });
+      document.getElementById('scoreLine').textContent = `Score: ${correct} / ${cards.length}`;
+    }
+
+    function showAllAnswers() {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        const ans = card.dataset.ans;
+        const radios = card.querySelectorAll('input[type="radio"]');
+        radios.forEach(r => { r.checked = (r.value === ans); });
+        const fb = card.querySelector('.feedback');
+        fb.textContent = 'Correct.';
+        fb.classList.remove('hidden', 'wrong');
+        fb.classList.add('correct');
+      });
+      document.getElementById('scoreLine').textContent = `Score: ${cards.length} / ${cards.length}`;
+    }
+
+    function resetQuiz() {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        const radios = card.querySelectorAll('input[type="radio"]');
+        radios.forEach(r => { r.checked = false; });
+        const fb = card.querySelector('.feedback');
+        fb.textContent = '';
+        fb.classList.add('hidden');
+        fb.classList.remove('correct', 'wrong');
+      });
+      document.getElementById('scoreLine').textContent = `Score: 0 / ${cards.length}`;
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', checkAnswers);
+    document.getElementById('showBtn').addEventListener('click', showAllAnswers);
+    document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+  </script>
+</body>
+</html>
