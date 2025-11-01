@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Animal Tycoon Zoo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-image: url('Images/sea3.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+
+    #currency {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 18px;
+    }
+
+    #shop {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 300px;
+    }
+
+    #shop button {
+      display: block;
+      margin: 5px 0;
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    .animal {
+      position: absolute;
+      background-size: contain;
+      background-repeat: no-repeat;
+      display: none;
+    }
+
+    #musicBtn {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+
+    @keyframes swim {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(-30px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="currency">Coins: <span id="coins">0</span></div>
+
+  <div id="shop">
+    <strong>Animal Shop</strong>
+    <button onclick="buyAnimal('whaleshark', 50)">🐋 Whale Shark (50 coins)</button>
+    <button onclick="buyAnimal('turtle', 30)">🐢 Turtle (30 coins)</button>
+    <button onclick="buyAnimal('duck', 20)">🦆 Duck (20 coins)</button>
+    <button onclick="upgradeAnimal('whaleshark')">Upgrade Whale Shark</button>
+  </div>
+
+  <button id="musicBtn" onclick="toggleMusic()">🎵 Music</button>
+
+  <div id="whaleshark" class="animal" style="background-image: url('Images/whaleshark.png'); width: 180px; height: 95px; top: 350px; left: 840px; animation: swim 12s infinite;"></div>
+  <div id="turtle" class="animal" style="background-image: url('Images/turtle.png'); width: 70px; height: 55px; top: 125px; left: 130px; animation: swim 14s infinite;"></div>
+  <div id="duck" class="animal" style="background-image: url('Images/Duck.png'); width: 60px; height: 50px; top: 190px; left: 350px; animation: swim 16s infinite;"></div>
+
+  <audio loop id="myAudio">
+    <source src="Images/aquarium_music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+  let coins = 100; // Starting capital 💰
+  let animals = {
+    whaleshark: { income: 5, level: 1 },
+    turtle: { income: 3, level: 1 },
+    duck: { income: 2, level: 1 }
+  };
+
+  function updateCoins() {
+    let income = 1; // Base passive income
+    for (let id in animals) {
+      if (document.getElementById(id).style.display === 'block') {
+        income += animals[id].income;
+      }
+    }
+    coins += income;
+    document.getElementById('coins').textContent = coins;
+    localStorage.setItem('coins', coins);
+  }
+
+  setInterval(updateCoins, 1000);
+
+  function buyAnimal(id, cost) {
+    if (coins >= cost) {
+      coins -= cost;
+      document.getElementById('coins').textContent = coins;
+      document.getElementById(id).style.display = 'block';
+      localStorage.setItem('coins', coins);
+      localStorage.setItem(id, 'unlocked');
+    } else {
+      alert("Not enough coins!");
+    }
+  }
+
+  function upgradeAnimal(id) {
+    let upgradeCost = animals[id].level * 100;
+    if (coins >= upgradeCost) {
+      coins -= upgradeCost;
+      animals[id].level++;
+      animals[id].income += 2;
+      alert(`${id} upgraded to level ${animals[id].level}!`);
+      document.getElementById('coins').textContent = coins;
+      localStorage.setItem('coins', coins);
+    } else {
+      alert("Not enough coins to upgrade!");
+    }
+  }
+
+  function toggleMusic() {
+    const audio = document.getElementById("myAudio");
+    if (audio.paused) {
+      audio.play();
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }
+
+  window.onload = () => {
+    coins = parseInt(localStorage.getItem('coins')) || 100;
+    document.getElementById('coins').textContent = coins;
+    for (let id in animals) {
+      if (localStorage.getItem(id) === 'unlocked') {
+        document.getElementById(id).style.display = 'block';
+      }
+    }
+  };
+</script>
+
+</body>
+</html>
