@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydration Reminder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e90ff, #00bfff);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 600px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .water-intake {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .water-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .water-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .goal {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .progress-container {
+            margin-top: 1rem;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: white;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .reminder-settings {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        
+        .settings-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .setting {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .add-water {
+            background-color: white;
+            color: #1e90ff;
+        }
+        
+        .reset {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .reminder-status {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: white;
+            color: #1e90ff;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification.show {
+            display: block;
+        }
+        
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Stay Hydrated</h1>
+            <p class="subtitle">Your daily water intake tracker</p>
+        </header>
+        
+        <div class="dashboard">
+            <div class="water-intake">
+                <div class="water-icon">💧</div>
+                <div class="water-amount" id="waterAmount">0 ml</div>
+                <div class="goal">Goal: <span id="waterGoal">2000</span> ml</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+            
+            <div class="reminder-settings">
+                <h2 class="settings-title">Reminder Settings</h2>
+                
+                <div class="setting">
+                    <label for="interval">Reminder Interval (minutes)</label>
+                    <select id="interval">
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60" selected>60 minutes</option>
+                        <option value="90">90 minutes</option>
+                        <option value="120">120 minutes</option>
+                    </select>
+                </div>
+                
+                <div class="setting">
+                    <label for="goal">Daily Water Goal (ml)</label>
+                    <input type="number" id="goal" min="500" max="5000" value="2000">
+                </div>
+                
+                <div class="setting">
+                    <label for="cupSize">Cup Size (ml)</label>
+                    <input type="number" id="cupSize" min="50" max="500" value="250">
+                </div>
+                
+                <div class="buttons">
+                    <button class="add-water" id="addWater">Add Water</button>
+                    <button class="reset" id="reset">Reset</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="reminder-status">
+            <p>Next reminder in: <span id="countdown">60:00</span> minutes</p>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <strong>Time to hydrate! 💧</strong>
+        <p>Drink a glass of water to stay healthy.</p>
+    </div>
+    
+    <footer>
+        <p>Stay hydrated for better health and productivity!</p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const waterAmountEl = document.getElementById('waterAmount');
+        const waterGoalEl = document.getElementById('waterGoal');
+        const progressBarEl = document.getElementById('progressBar');
+        const intervalEl = document.getElementById('interval');
+        const goalEl = document.getElementById('goal');
+        const cupSizeEl = document.getElementById('cupSize');
+        const addWaterBtn = document.getElementById('addWater');
+        const resetBtn = document.getElementById('reset');
+        const countdownEl = document.getElementById('countdown');
+        const notificationEl = document.getElementById('notification');
+        
+        // App State
+        let waterIntake = 0;
+        let waterGoal = 2000;
+        let cupSize = 250;
+        let reminderInterval = 60; // minutes
+        let countdownTimer;
+        let reminderTimer;
+        
+        // Initialize the app
+        function init() {
+            // Load saved data from localStorage
+            const savedWaterIntake = localStorage.getItem('waterIntake');
+            const savedWaterGoal = localStorage.getItem('waterGoal');
+            const savedCupSize = localStorage.getItem('cupSize');
+            const savedReminderInterval = localStorage.getItem('reminderInterval');
+            
+            if (savedWaterIntake) waterIntake = parseInt(savedWaterIntake);
+            if (savedWaterGoal) {
+                waterGoal = parseInt(savedWaterGoal);
+                goalEl.value = waterGoal;
+            }
+            if (savedCupSize) {
+                cupSize = parseInt(savedCupSize);
+                cupSizeEl.value = cupSize;
+            }
+            if (savedReminderInterval) {
+                reminderInterval = parseInt(savedReminderInterval);
+                intervalEl.value = reminderInterval;
+            }
+            
+            updateDisplay();
+            startReminderTimer();
+        }
+        
+        // Update the display with current values
+        function updateDisplay() {
+            waterAmountEl.textContent = `${waterIntake} ml`;
+            waterGoalEl.textContent = waterGoal;
+            
+            const progress = Math.min((waterIntake / waterGoal) * 100, 100);
+            progressBarEl.style.width = `${progress}%`;
+            
+            // Save to localStorage
+            localStorage.setItem('waterIntake', waterIntake);
+            localStorage.setItem('waterGoal', waterGoal);
+            localStorage.setItem('cupSize', cupSize);
+            localStorage.setItem('reminderInterval', reminderInterval);
+        }
+        
+        // Start the reminder timer
+        function startReminderTimer() {
+            clearInterval(countdownTimer);
+            clearTimeout(reminderTimer);
+            
+            let timeLeft = reminderInterval * 60; // Convert to seconds
+            
+            // Update countdown display
+            countdownTimer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownEl.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    showNotification();
+                    startReminderTimer(); // Restart the timer
+                } else {
+                    timeLeft--;
+                }
+            }, 1000);
+            
+            // Set the actual reminder
+            reminderTimer = setTimeout(() => {
+                showNotification();
+                startReminderTimer(); // Restart the timer
+            }, reminderInterval * 60 * 1000);
+        }
+        
+        // Show the notification
+        function showNotification() {
+            notificationEl.classList.add('show');
+            
+            // Hide notification after 10 seconds
+            setTimeout(() => {
+                notificationEl.classList.remove('show');
+            }, 10000);
+            
+            // Play notification sound if available
+            playNotificationSound();
+        }
+        
+        // Play notification sound
+        function playNotificationSound() {
+            // Create a simple beep sound using Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log("Audio context not supported");
+            }
+        }
+        
+        // Event Listeners
+        addWaterBtn.addEventListener('click', () => {
+            waterIntake += cupSize;
+            updateDisplay();
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            waterIntake = 0;
+            updateDisplay();
+        });
+        
+        goalEl.addEventListener('change', () => {
+            waterGoal = parseInt(goalEl.value);
+            updateDisplay();
+        });
+        
+        cupSizeEl.addEventListener('change', () => {
+            cupSize = parseInt(cupSizeEl.value);
+            localStorage.setItem('cupSize', cupSize);
+        });
+        
+        intervalEl.addEventListener('change', () => {
+            reminderInterval = parseInt(intervalEl.value);
+            localStorage.setItem('reminderInterval', reminderInterval);
+            startReminderTimer();
+        });
+        
+        // Close notification when clicked
+        notificationEl.addEventListener('click', () => {
+            notificationEl.classList.remove('show');
+        });
+        
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
