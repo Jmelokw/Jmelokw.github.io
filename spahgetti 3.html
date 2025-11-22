@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaghetti Bolognese Cooking Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #ffecd2, #fcb69f);
+            color: #5a3921;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        header {
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            color: #e74c3c;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 0 #ffd700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .ingredients-panel {
+            background-color: #f9f3e9;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .ingredient {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ingredient:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .ingredient.used {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .ingredient-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ingredient-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .cooking-area {
+            background-color: #f9f3e9;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stove {
+            width: 200px;
+            height: 30px;
+            background-color: #7f8c8d;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .stove::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            background-color: #95a5a6;
+            top: 5px;
+        }
+        
+        .pot {
+            width: 180px;
+            height: 120px;
+            background-color: #bdc3c7;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .pot-content {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 0%;
+            transition: height 0.5s;
+            border-radius: 0 0 20px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .bubble {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            bottom: 0;
+            animation: bubble-rise 3s infinite;
+        }
+        
+        @keyframes bubble-rise {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+        
+        .noodle {
+            width: 5px;
+            height: 80px;
+            background-color: #f5deb3;
+            margin: 0 2px;
+            border-radius: 5px;
+            transform-origin: bottom;
+            animation: noodle-cook 2s infinite;
+        }
+        
+        @keyframes noodle-cook {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.1); }
+        }
+        
+        .instructions {
+            background-color: #fff5e6;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .step {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .step.active {
+            border-left: 5px solid #e74c3c;
+            background-color: #fff0e0;
+        }
+        
+        .step.completed {
+            border-left: 5px solid #2ecc71;
+            opacity: 0.7;
+        }
+        
+        .step-number {
+            background-color: #e74c3c;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+        
+        .step.completed .step-number {
+            background-color: #2ecc71;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .primary-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .secondary-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: #e74c3c;
+        }
+        
+        .progress-container {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #2ecc71;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            background-color: #fff5e6;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: #e74c3c;
+        }
+        
+        .stars {
+            font-size: 2rem;
+            color: #ffd700;
+            margin: 1rem 0;
+        }
+        
+        .ingredient-in-pot {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        
+        .flame {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(ellipse at center, #ff6b35 0%, #ff8e53 50%, transparent 70%);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flicker 0.5s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+            100% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+        }
+        
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍝 Spaghetti Bolognese Game</h1>
+            <p class="subtitle">Cook the perfect spaghetti bolognese step by step!</p>
+            <div class="score">Score: <span id="scoreValue">0</span> points</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </header>
+        
+        <div class="game-area">
+            <div class="ingredients-panel">
+                <h2>Ingredients</h2>
+                <div class="ingredients-grid" id="ingredientsGrid">
+                    <!-- Ingredients will be added by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="cooking-area">
+                <h2>Cooking Pot</h2>
+                <div class="stove">
+                    <div class="flame" id="flame"></div>
+                </div>
+                <div class="pot" id="cookingPot">
+                    <div class="pot-content" id="potContent">
+                        <div class="bubbles" id="bubbles"></div>
+                    </div>
+                </div>
+                <div class="timer" id="timer">Time: 0s</div>
+                <button id="actionBtn" class="primary-btn">Start Cooking</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>Cooking Steps</h2>
+            <div class="step active" id="step1">
+                <div class="step-number">1</div>
+                <div class="step-text">Heat oil in the pot and sauté onions and garlic</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-number">2</div>
+                <div class="step-text">Brown the ground beef</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-number">3</div>
+                <div class="step-text">Add tomatoes and tomato paste</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-number">4</div>
+                <div class="step-text">Add herbs and seasonings</div>
+            </div>
+            <div class="step" id="step5">
+                <div class="step-number">5</div>
+                <div class="step-text">Add spaghetti and water, then cook</div>
+            </div>
+            <div class="step" id="step6">
+                <div class="step-number">6</div>
+                <div class="step-text">Serve with grated cheese</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="resetBtn" class="secondary-btn">Start Over</button>
+            <button id="nextBtn" class="primary-btn" disabled>Next Step</button>
+        </div>
+        
+        <div class="result" id="result">
+            <h2>Your Spaghetti Bolognese is Ready! 🎉</h2>
+            <div class="stars" id="stars">★★★★★</div>
+            <p id="resultText">You made a delicious plate of spaghetti bolognese!</p>
+            <button id="playAgainBtn" class="primary-btn">Play Again</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Spaghetti Bolognese Game - Made with ❤️ for cooking enthusiasts</p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const ingredientsGrid = document.getElementById('ingredientsGrid');
+        const cookingPot = document.getElementById('cookingPot');
+        const potContent = document.getElementById('potContent');
+        const bubbles = document.getElementById('bubbles');
+        const flame = document.getElementById('flame');
+        const timerEl = document.getElementById('timer');
+        const actionBtn = document.getElementById('actionBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const progressBar = document.getElementById('progressBar');
+        const scoreValue = document.getElementById('scoreValue');
+        const result = document.getElementById('result');
+        const stars = document.getElementById('stars');
+        const resultText = document.getElementById('resultText');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        
+        // Ingredients data
+        const ingredients = [
+            { id: 'oil', name: 'Olive Oil', icon: '🫒', step: 1, used: false },
+            { id: 'onion', name: 'Onion', icon: '🧅', step: 1, used: false },
+            { id: 'garlic', name: 'Garlic', icon: '🧄', step: 1, used: false },
+            { id: 'beef', name: 'Ground Beef', icon: '🥩', step: 2, used: false },
+            { id: 'tomatoes', name: 'Tomatoes', icon: '🍅', step: 3, used: false },
+            { id: 'tomatoPaste', name: 'Tomato Paste', icon: '🥫', step: 3, used: false },
+            { id: 'herbs', name: 'Herbs', icon: '🌿', step: 4, used: false },
+            { id: 'salt', name: 'Salt & Pepper', icon: '🧂', step: 4, used: false },
+            { id: 'spaghetti', name: 'Spaghetti', icon: '🍝', step: 5, used: false },
+            { id: 'water', name: 'Water', icon: '💧', step: 5, used: false },
+            { id: 'cheese', name: 'Parmesan', icon: '🧀', step: 6, used: false }
+        ];
+        
+        // Game State
+        let currentStep = 1;
+        let score = 0;
+        let timer = 0;
+        let timerInterval;
+        let isCooking = false;
+        let potLevel = 0;
+        let ingredientsAdded = [];
+        let stepCompleted = false;
+        
+        // Initialize the game
+        function init() {
+            renderIngredients();
+            updateProgress();
+            createBubbles();
+            resetBtn.addEventListener('click', resetGame);
+            nextBtn.addEventListener('click', nextStep);
+            actionBtn.addEventListener('click', handleAction);
+            playAgainBtn.addEventListener('click', resetGame);
+        }
+        
+        // Render ingredients grid
+        function renderIngredients() {
+            ingredientsGrid.innerHTML = '';
+            
+            ingredients.forEach(ingredient => {
+                const ingredientEl = document.createElement('div');
+                ingredientEl.className = `ingredient ${ingredient.used ? 'used' : ''}`;
+                ingredientEl.dataset.id = ingredient.id;
+                ingredientEl.dataset.step = ingredient.step;
+                
+                ingredientEl.innerHTML = `
+                    <div class="ingredient-icon">${ingredient.icon}</div>
+                    <div class="ingredient-name">${ingredient.name}</div>
+                `;
+                
+                if (!ingredient.used) {
+                    ingredientEl.addEventListener('click', () => addIngredient(ingredient));
+                }
+                
+                ingredientsGrid.appendChild(ingredientEl);
+            });
+        }
+        
+        // Add ingredient to the pot
+        function addIngredient(ingredient) {
+            if (ingredient.step !== currentStep || ingredient.used) return;
+            
+            // Mark ingredient as used
+            ingredient.used = true;
+            ingredientsAdded.push(ingredient.id);
+            
+            // Update UI
+            renderIngredients();
+            
+            // Add visual to pot
+            addIngredientToPot(ingredient);
+            
+            // Update score
+            updateScore(10);
+            
+            // Check if step is completed
+            checkStepCompletion();
+        }
+        
+        // Add ingredient animation to pot
+        function addIngredientToPot(ingredient) {
+            const ing = document.createElement('div');
+            ing.className = 'ingredient-in-pot';
+            ing.textContent = ingredient.icon;
+            ing.style.left = `${Math.random() * 70 + 15}%`;
+            ing.style.bottom = `${potLevel}%`;
+            potContent.appendChild(ing);
+            
+            // Increase pot level for some ingredients
+            if (['water', 'tomatoes', 'tomatoPaste'].includes(ingredient.id)) {
+                potLevel += 15;
+                potContent.style.height = `${potLevel}%`;
+            }
+            
+            // Remove ingredient after animation
+            setTimeout(() => {
+                ing.remove();
+            }, 3000);
+        }
+        
+        // Check if current step is completed
+        function checkStepCompletion() {
+            const stepIngredients = ingredients.filter(ing => ing.step === currentStep);
+            const usedStepIngredients = stepIngredients.filter(ing => ing.used);
+            
+            if (usedStepIngredients.length === stepIngredients.length) {
+                stepCompleted = true;
+                nextBtn.disabled = false;
+                
+                // Special actions for certain steps
+                if (currentStep === 1) {
+                    flame.style.display = 'block';
+                    actionBtn.textContent = 'Continue Cooking';
+                } else if (currentStep === 5) {
+                    actionBtn.textContent = 'Cook Spaghetti';
+                }
+            }
+        }
+        
+        // Create bubbles animation
+        function createBubbles() {
+            bubbles.innerHTML = '';
+            if (isCooking) {
+                for (let i = 0; i < 15; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.classList.add('bubble');
+                    bubble.style.left = `${Math.random() * 100}%`;
+                    bubble.style.width = `${Math.random() * 10 + 5}px`;
+                    bubble.style.height = bubble.style.width;
+                    bubble.style.animationDelay = `${Math.random() * 2}s`;
+                    bubbles.appendChild(bubble);
+                }
+            }
+        }
+        
+        // Handle action button click
+        function handleAction() {
+            if (currentStep === 5 && stepCompleted && !isCooking) {
+                startCooking();
+            } else if (currentStep === 6 && stepCompleted) {
+                serveSpaghetti();
+            }
+        }
+        
+        // Start cooking spaghetti
+        function startCooking() {
+            if (!isCooking) {
+                isCooking = true;
+                timer = 0;
+                actionBtn.disabled = true;
+                
+                // Add spaghetti to pot
+                addSpaghettiToPot();
+                
+                // Start timer
+                timerInterval = setInterval(() => {
+                    timer++;
+                    timerEl.textContent = `Time: ${timer}s`;
+                    
+                    if (timer >= 10) {
+                        clearInterval(timerInterval);
+                        actionBtn.disabled = false;
+                        actionBtn.textContent = 'Serve';
+                        updateScore(25);
+                        completeStep();
+                    }
+                }, 1000);
+                
+                createBubbles();
+            }
+        }
+        
+        // Add spaghetti to pot
+        function addSpaghettiToPot() {
+            const spaghettiContainer = document.createElement('div');
+            spaghettiContainer.style.display = 'flex';
+            spaghettiContainer.style.justifyContent = 'center';
+            spaghettiContainer.style.width = '100%';
+            spaghettiContainer.style.position = 'absolute';
+            spaghettiContainer.style.bottom = '0';
+            
+            for (let i = 0; i < 15; i++) {
+                const noodle = document.createElement('div');
+                noodle.classList.add('noodle');
+                noodle.style.animationDelay = `${Math.random() * 1}s`;
+                spaghettiContainer.appendChild(noodle);
+            }
+            
+            potContent.appendChild(spaghettiContainer);
+        }
+        
+        // Serve the finished spaghetti
+        function serveSpaghetti() {
+            // Calculate final score
+            let finalScore = score;
+            let starRating = 5;
+            
+            if (timer > 12) {
+                finalScore -= 10;
+                starRating = 4;
+            } else if (timer < 8) {
+                finalScore -= 5;
+                starRating = 4;
+            }
+            
+            if (finalScore < 80) {
+                starRating = 3;
+            } else if (finalScore < 90) {
+                starRating = 4;
+            }
+            
+            // Display results
+            stars.textContent = '★'.repeat(starRating) + '☆'.repeat(5 - starRating);
+            resultText.textContent = `You scored ${finalScore} points! ${getResultMessage(starRating)}`;
+            result.classList.add('show');
+            
+            updateScore(0, finalScore); // Set final score
+        }
+        
+        // Get result message based on stars
+        function getResultMessage(stars) {
+            switch(stars) {
+                case 5: return "Perfect! You're a master chef!";
+                case 4: return "Great job! Delicious spaghetti bolognese!";
+                case 3: return "Good effort! With practice, you'll improve.";
+                default: return "Keep practicing! You'll get better.";
+            }
+        }
+        
+        // Move to next step
+        function nextStep() {
+            if (currentStep < 6) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.getElementById(`step${currentStep}`).classList.add('completed');
+                
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                
+                updateProgress();
+                updateUIForStep();
+                
+                nextBtn.disabled = true;
+                stepCompleted = false;
+            }
+        }
+        
+        // Complete current step
+        function completeStep() {
+            nextBtn.disabled = false;
+            stepCompleted = true;
+        }
+        
+        // Update UI based on current step
+        function updateUIForStep() {
+            switch(currentStep) {
+                case 1:
+                    actionBtn.textContent = 'Start Cooking';
+                    actionBtn.disabled = false;
+                    break;
+                case 5:
+                    actionBtn.textContent = 'Cook Spaghetti';
+                    actionBtn.disabled = !stepCompleted;
+                    break;
+                case 6:
+                    actionBtn.textContent = 'Serve';
+                    actionBtn.disabled = !stepCompleted;
+                    break;
+                default:
+                    actionBtn.textContent = 'Continue';
+                    actionBtn.disabled = true;
+                    break;
+            }
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const progress = (currentStep - 1) / 5 * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // Update score
+        function updateScore(points, setScore = null) {
+            if (setScore !== null) {
+                score = setScore;
+            } else {
+                score += points;
+            }
+            scoreValue.textContent = score;
+        }
+        
+        // Reset the game
+        function resetGame() {
+            currentStep = 1;
+            score = 0;
+            timer = 0;
+            isCooking = false;
+            potLevel = 0;
+            ingredientsAdded = [];
+            stepCompleted = false;
+            
+            // Reset ingredients
+            ingredients.forEach(ing => {
+                ing.used = false;
+            });
+            
+            // Reset UI
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.getElementById('step1').classList.add('active');
+            
+            potContent.style.height = '0%';
+            potContent.innerHTML = '<div class="bubbles" id="bubbles"></div>';
+            timerEl.textContent = 'Time: 0s';
+            flame.style.display = 'none';
+            result.classList.remove('show');
+            
+            updateProgress();
+            updateUIForStep();
+            updateScore(0);
+            nextBtn.disabled = true;
+            actionBtn.disabled = false;
+            
+            renderIngredients();
+            createBubbles();
+            
+            clearInterval(timerInterval);
+        }
+        
+        // Initialize the game when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
