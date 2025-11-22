@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasta Matching Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #5a3921;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        header {
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            color: #e74c3c;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 0 #ffd700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            background-color: #fff5e6;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        .info-item {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .moves {
+            color: #3498db;
+        }
+        
+        .matches {
+            color: #2ecc71;
+        }
+        
+        .timer {
+            color: #e74c3c;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .card {
+            height: 120px;
+            background-color: #f9f3e9;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 0.5rem;
+        }
+        
+        .card-front {
+            background-color: #e74c3c;
+            color: white;
+            font-size: 2.5rem;
+        }
+        
+        .card-back {
+            background-color: white;
+            transform: rotateY(180deg);
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #5a3921;
+            padding: 0.8rem;
+            overflow: hidden;
+        }
+        
+        .card.matched {
+            transform: rotateY(180deg);
+            box-shadow: 0 0 15px #2ecc71;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .primary-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .secondary-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            background-color: #fff5e6;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .stars {
+            font-size: 2rem;
+            color: #ffd700;
+            margin: 1rem 0;
+        }
+        
+        .pasta-icon {
+            font-size: 2rem;
+            margin-right: 0.5rem;
+        }
+        
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .instructions {
+            background-color: #fff5e6;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            color: #e74c3c;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍝 Pasta Matching Game</h1>
+            <p class="subtitle">Match the pasta with its description!</p>
+        </header>
+        
+        <div class="instructions">
+            <h3>How to Play:</h3>
+            <p>Flip cards to find matching pairs of pasta types and their descriptions. Try to complete the game with the fewest moves and fastest time!</p>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-item moves">Moves: <span id="moves">0</span></div>
+            <div class="info-item matches">Matches: <span id="matches">0</span>/10</div>
+            <div class="info-item timer">Time: <span id="timer">0</span>s</div>
+        </div>
+        
+        <div class="game-board" id="gameBoard">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <button id="resetBtn" class="secondary-btn">New Game</button>
+            <button id="hintBtn" class="primary-btn">Hint (3)</button>
+        </div>
+        
+        <div class="result" id="result">
+            <h2>Congratulations! 🎉</h2>
+            <div class="stars" id="stars">★★★★★</div>
+            <p id="resultText">You matched all the pastas!</p>
+            <p>Final Score: <span id="finalScore">0</span> points</p>
+            <button id="playAgainBtn" class="primary-btn">Play Again</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Pasta Matching Game - Test your knowledge of Italian pasta!</p>
+    </footer>
+
+    <script>
+        // Pasta data - name and description pairs
+        const pastaData = [
+            { name: "Spaghetti", description: "Long, thin, cylindrical pasta", icon: "🍝" },
+            { name: "Linguine", description: "Flattened spaghetti, 'little tongues'", icon: "🫓" },
+            { name: "Fettuccine", description: "Ribbon-like pasta, wider than linguine", icon: "🎀" },
+            { name: "Penne", description: "Tube-shaped pasta with diagonal cuts", icon: "✒️" },
+            { name: "Fusilli", description: "Corkscrew or spiral-shaped pasta", icon: "🌀" },
+            { name: "Farfalle", description: "Bow-tie or butterfly-shaped pasta", icon: "🎀" },
+            { name: "Ravioli", description: "Square pasta pillows with fillings", icon: "🟦" },
+            { name: "Lasagna", description: "Wide, flat sheets for layering", icon: "📄" },
+            { name: "Macaroni", description: "Short, curved tubes for mac & cheese", icon: "⭕" },
+            { name: "Conchiglie", description: "Shell-shaped pasta that holds sauce well", icon: "🐚" }
+        ];
+
+        // DOM Elements
+        const gameBoard = document.getElementById('gameBoard');
+        const movesElement = document.getElementById('moves');
+        const matchesElement = document.getElementById('matches');
+        const timerElement = document.getElementById('timer');
+        const resetBtn = document.getElementById('resetBtn');
+        const hintBtn = document.getElementById('hintBtn');
+        const result = document.getElementById('result');
+        const stars = document.getElementById('stars');
+        const resultText = document.getElementById('resultText');
+        const finalScore = document.getElementById('finalScore');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+
+        // Game State
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let timer = 0;
+        let timerInterval;
+        let gameStarted = false;
+        let hintsRemaining = 3;
+
+        // Initialize the game
+        function init() {
+            createCards();
+            renderCards();
+            resetBtn.addEventListener('click', resetGame);
+            hintBtn.addEventListener('click', useHint);
+            playAgainBtn.addEventListener('click', resetGame);
+        }
+
+        // Create card data
+        function createCards() {
+            cards = [];
+            
+            // Create pairs of cards
+            pastaData.forEach(pasta => {
+                // Name card
+                cards.push({
+                    type: 'name',
+                    content: pasta.name,
+                    match: pasta.description,
+                    icon: pasta.icon,
+                    id: pasta.name
+                });
+                
+                // Description card
+                cards.push({
+                    type: 'description',
+                    content: pasta.description,
+                    match: pasta.name,
+                    icon: pasta.icon,
+                    id: pasta.description
+                });
+            });
+            
+            // Shuffle the cards
+            shuffleCards();
+        }
+
+        // Shuffle cards using Fisher-Yates algorithm
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+        }
+
+        // Render cards on the game board
+        function renderCards() {
+            gameBoard.innerHTML = '';
+            
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.dataset.index = index;
+                
+                cardElement.innerHTML = `
+                    <div class="card-front">${card.icon}</div>
+                    <div class="card-back">
+                        ${card.type === 'name' ? `<span class="pasta-icon">${card.icon}</span>` : ''}
+                        ${card.content}
+                    </div>
+                `;
+                
+                cardElement.addEventListener('click', () => flipCard(cardElement, index));
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        // Flip a card
+        function flipCard(cardElement, index) {
+            // Don't allow flipping if already flipped or matched
+            if (cardElement.classList.contains('flipped') || 
+                cardElement.classList.contains('matched') || 
+                flippedCards.length >= 2) {
+                return;
+            }
+            
+            // Start timer on first move
+            if (!gameStarted) {
+                startTimer();
+                gameStarted = true;
+            }
+            
+            // Flip the card
+            cardElement.classList.add('flipped');
+            flippedCards.push({ element: cardElement, index });
+            
+            // Check for match if two cards are flipped
+            if (flippedCards.length === 2) {
+                moves++;
+                movesElement.textContent = moves;
+                
+                setTimeout(checkForMatch, 500);
+            }
+        }
+
+        // Check if flipped cards match
+        function checkForMatch() {
+            const card1 = cards[flippedCards[0].index];
+            const card2 = cards[flippedCards[1].index];
+            
+            // Check if the cards match (one name and one description with matching content)
+            if ((card1.type !== card2.type) && 
+                ((card1.match === card2.content) || (card2.match === card1.content))) {
+                // Match found
+                flippedCards.forEach(card => {
+                    card.element.classList.add('matched');
+                });
+                
+                matchedPairs++;
+                matchesElement.textContent = matchedPairs;
+                
+                // Check if game is complete
+                if (matchedPairs === pastaData.length) {
+                    endGame();
+                }
+            } else {
+                // No match - flip cards back
+                flippedCards.forEach(card => {
+                    card.element.classList.remove('flipped');
+                });
+            }
+            
+            // Reset flipped cards
+            flippedCards = [];
+        }
+
+        // Use a hint
+        function useHint() {
+            if (hintsRemaining <= 0) return;
+            
+            // Find an unmatched pair
+            const unmatchedCards = cards.filter((card, index) => {
+                const cardElement = document.querySelector(`.card[data-index="${index}"]`);
+                return !cardElement.classList.contains('matched');
+            });
+            
+            if (unmatchedCards.length < 2) return;
+            
+            // Find a matching pair to reveal
+            let hintIndex1, hintIndex2;
+            
+            for (let i = 0; i < unmatchedCards.length; i++) {
+                for (let j = i + 1; j < unmatchedCards.length; j++) {
+                    if (unmatchedCards[i].match === unmatchedCards[j].content || 
+                        unmatchedCards[j].match === unmatchedCards[i].content) {
+                        hintIndex1 = cards.indexOf(unmatchedCards[i]);
+                        hintIndex2 = cards.indexOf(unmatchedCards[j]);
+                        break;
+                    }
+                }
+                if (hintIndex1 !== undefined) break;
+            }
+            
+            if (hintIndex1 === undefined) return;
+            
+            // Temporarily show the matching cards
+            const card1 = document.querySelector(`.card[data-index="${hintIndex1}"]`);
+            const card2 = document.querySelector(`.card[data-index="${hintIndex2}"]`);
+            
+            card1.classList.add('flipped');
+            card2.classList.add('flipped');
+            
+            setTimeout(() => {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+            }, 1000);
+            
+            // Update hints remaining
+            hintsRemaining--;
+            hintBtn.textContent = `Hint (${hintsRemaining})`;
+            
+            if (hintsRemaining <= 0) {
+                hintBtn.disabled = true;
+            }
+        }
+
+        // Start the game timer
+        function startTimer() {
+            timer = 0;
+            timerInterval = setInterval(() => {
+                timer++;
+                timerElement.textContent = timer;
+            }, 1000);
+        }
+
+        // End the game
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            const maxScore = 1000;
+            const timePenalty = Math.min(timer * 2, 300);
+            const movesPenalty = Math.min(moves * 5, 300);
+            const score = Math.max(maxScore - timePenalty - movesPenalty, 100);
+            
+            // Calculate stars
+            let starRating = 5;
+            if (score < 800) starRating = 4;
+            if (score < 600) starRating = 3;
+            if (score < 400) starRating = 2;
+            if (score < 200) starRating = 1;
+            
+            // Display results
+            stars.textContent = '★'.repeat(starRating) + '☆'.repeat(5 - starRating);
+            finalScore.textContent = score;
+            
+            // Set result message based on score
+            if (score >= 900) {
+                resultText.textContent = "Perfect! You're a pasta expert!";
+            } else if (score >= 700) {
+                resultText.textContent = "Great job! You know your pasta well!";
+            } else if (score >= 500) {
+                resultText.textContent = "Good effort! You're getting there!";
+            } else {
+                resultText.textContent = "Nice try! Practice makes perfect!";
+            }
+            
+            result.classList.add('show');
+        }
+
+        // Reset the game
+        function resetGame() {
+            clearInterval(timerInterval);
+            
+            // Reset game state
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            timer = 0;
+            gameStarted = false;
+            hintsRemaining = 3;
+            
+            // Update UI
+            movesElement.textContent = moves;
+            matchesElement.textContent = matchedPairs;
+            timerElement.textContent = timer;
+            hintBtn.textContent = `Hint (${hintsRemaining})`;
+            hintBtn.disabled = false;
+            
+            // Hide result
+            result.classList.remove('show');
+            
+            // Recreate and render cards
+            createCards();
+            renderCards();
+        }
+
+        // Initialize the game when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>

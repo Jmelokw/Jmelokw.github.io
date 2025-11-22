@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaghetti Chef Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #ffecd2, #fcb69f);
+            color: #5a3921;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        header {
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            color: #e74c3c;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 0 #ffd700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .kitchen {
+            background-color: #f9f3e9;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ingredient {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            font-size: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+        
+        .ingredient:hover {
+            transform: scale(1.1);
+        }
+        
+        .pasta {
+            background-color: #f5deb3;
+        }
+        
+        .tomato {
+            background-color: #ff6347;
+        }
+        
+        .garlic {
+            background-color: #f8f8ff;
+        }
+        
+        .herbs {
+            background-color: #90ee90;
+        }
+        
+        .cheese {
+            background-color: #fffacd;
+        }
+        
+        .cooking-area {
+            background-color: #e8e8e8;
+            border-radius: 10px;
+            padding: 1rem;
+            min-height: 200px;
+            margin-top: 1rem;
+            position: relative;
+        }
+        
+        .pot {
+            width: 150px;
+            height: 120px;
+            background-color: #a9a9a9;
+            border-radius: 0 0 20px 20px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .water {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 0%;
+            background-color: #87ceeb;
+            transition: height 1s;
+        }
+        
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .bubble {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            bottom: 0;
+            animation: bubble-rise 3s infinite;
+        }
+        
+        @keyframes bubble-rise {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+        
+        .instructions {
+            background-color: #fff5e6;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: left;
+        }
+        
+        .step {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step.active {
+            border-left: 5px solid #e74c3c;
+            background-color: #fff0e0;
+        }
+        
+        .step.completed {
+            border-left: 5px solid #2ecc71;
+            opacity: 0.7;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .primary-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .secondary-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: #e74c3c;
+        }
+        
+        .progress-container {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #2ecc71;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            background-color: #fff5e6;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .pasta-in-pot {
+            position: absolute;
+            width: 100%;
+            height: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            transition: height 1s;
+        }
+        
+        .noodle {
+            width: 5px;
+            height: 80px;
+            background-color: #f5deb3;
+            margin: 0 2px;
+            border-radius: 5px;
+            transform-origin: bottom;
+            animation: noodle-cook 2s infinite;
+        }
+        
+        @keyframes noodle-cook {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.1); }
+        }
+        
+        .score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: #e74c3c;
+        }
+        
+        .stars {
+            font-size: 2rem;
+            color: #ffd700;
+            margin: 1rem 0;
+        }
+        
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Spaghetti Chef</h1>
+            <p class="subtitle">Create the perfect spaghetti dish step by step!</p>
+            <div class="score">Score: <span id="scoreValue">0</span> points</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </header>
+        
+        <div class="game-area">
+            <div class="kitchen">
+                <h2>Your Kitchen</h2>
+                <div class="ingredients">
+                    <div class="ingredient pasta" data-ingredient="pasta">🍝</div>
+                    <div class="ingredient tomato" data-ingredient="tomato">🍅</div>
+                    <div class="ingredient garlic" data-ingredient="garlic">🧄</div>
+                    <div class="ingredient herbs" data-ingredient="herbs">🌿</div>
+                    <div class="ingredient cheese" data-ingredient="cheese">🧀</div>
+                </div>
+                
+                <div class="cooking-area">
+                    <h3>Cooking Pot</h3>
+                    <div class="pot" id="cookingPot">
+                        <div class="water" id="water"></div>
+                        <div class="bubbles" id="bubbles"></div>
+                        <div class="pasta-in-pot" id="pastaInPot"></div>
+                    </div>
+                    <div class="timer" id="timer">Time: 0s</div>
+                    <button id="actionBtn" class="primary-btn">Start Cooking</button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h2>Cooking Steps</h2>
+                <div class="step active" id="step1">
+                    <h3>Step 1: Boil Water</h3>
+                    <p>Fill the pot with water and bring it to a boil.</p>
+                </div>
+                <div class="step" id="step2">
+                    <h3>Step 2: Add Pasta</h3>
+                    <p>Add spaghetti to the boiling water and cook for 8-10 minutes.</p>
+                </div>
+                <div class="step" id="step3">
+                    <h3>Step 3: Prepare Sauce</h3>
+                    <p>Mix tomatoes, garlic, and herbs to create a delicious sauce.</p>
+                </div>
+                <div class="step" id="step4">
+                    <h3>Step 4: Combine & Serve</h3>
+                    <p>Drain pasta, mix with sauce, and top with cheese.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="resetBtn" class="secondary-btn">Start Over</button>
+            <button id="nextBtn" class="primary-btn" disabled>Next Step</button>
+        </div>
+        
+        <div class="result" id="result">
+            <h2>Your Spaghetti is Ready!</h2>
+            <div class="stars" id="stars">★★★★★</div>
+            <p id="resultText">You made a delicious plate of spaghetti!</p>
+            <button id="playAgainBtn" class="primary-btn">Play Again</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Spaghetti Chef Game - Made with ❤️ for pasta lovers</p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const cookingPot = document.getElementById('cookingPot');
+        const water = document.getElementById('water');
+        const bubbles = document.getElementById('bubbles');
+        const pastaInPot = document.getElementById('pastaInPot');
+        const timerEl = document.getElementById('timer');
+        const actionBtn = document.getElementById('actionBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const progressBar = document.getElementById('progressBar');
+        const scoreValue = document.getElementById('scoreValue');
+        const result = document.getElementById('result');
+        const stars = document.getElementById('stars');
+        const resultText = document.getElementById('resultText');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        
+        // Game State
+        let currentStep = 1;
+        let score = 0;
+        let timer = 0;
+        let timerInterval;
+        let isCooking = false;
+        let waterLevel = 0;
+        let pastaAdded = false;
+        let saucePrepared = false;
+        
+        // Initialize the game
+        function init() {
+            updateProgress();
+            createBubbles();
+            resetBtn.addEventListener('click', resetGame);
+            nextBtn.addEventListener('click', nextStep);
+            actionBtn.addEventListener('click', handleAction);
+            playAgainBtn.addEventListener('click', resetGame);
+            
+            // Make ingredients draggable
+            document.querySelectorAll('.ingredient').forEach(ingredient => {
+                ingredient.addEventListener('dragstart', handleDragStart);
+            });
+            
+            cookingPot.addEventListener('dragover', handleDragOver);
+            cookingPot.addEventListener('drop', handleDrop);
+        }
+        
+        // Create bubbles animation
+        function createBubbles() {
+            bubbles.innerHTML = '';
+            if (waterLevel > 0) {
+                for (let i = 0; i < 15; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.classList.add('bubble');
+                    bubble.style.left = `${Math.random() * 100}%`;
+                    bubble.style.width = `${Math.random() * 10 + 5}px`;
+                    bubble.style.height = bubble.style.width;
+                    bubble.style.animationDelay = `${Math.random() * 2}s`;
+                    bubbles.appendChild(bubble);
+                }
+            }
+        }
+        
+        // Handle drag and drop
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.ingredient);
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            const ingredient = e.dataTransfer.getData('text/plain');
+            
+            if (currentStep === 2 && ingredient === 'pasta' && waterLevel === 100) {
+                addPastaToPot();
+            } else if (currentStep === 3 && waterLevel === 100 && pastaAdded) {
+                prepareSauce(ingredient);
+            }
+        }
+        
+        // Add pasta to the pot
+        function addPastaToPot() {
+            pastaInPot.style.height = '70%';
+            pastaAdded = true;
+            
+            // Create noodle elements
+            for (let i = 0; i < 15; i++) {
+                const noodle = document.createElement('div');
+                noodle.classList.add('noodle');
+                noodle.style.animationDelay = `${Math.random() * 1}s`;
+                pastaInPot.appendChild(noodle);
+            }
+            
+            updateScore(20);
+            completeStep();
+        }
+        
+        // Prepare sauce with ingredients
+        function prepareSauce(ingredient) {
+            if (ingredient === 'tomato' || ingredient === 'garlic' || ingredient === 'herbs') {
+                updateScore(10);
+                
+                // Check if all sauce ingredients are added
+                const addedIngredients = document.querySelectorAll('.ingredient[data-ingredient].used');
+                if (addedIngredients.length >= 3) {
+                    saucePrepared = true;
+                    completeStep();
+                }
+            }
+        }
+        
+        // Handle action button click
+        function handleAction() {
+            if (currentStep === 1) {
+                boilWater();
+            } else if (currentStep === 2 && waterLevel === 100) {
+                startCookingPasta();
+            } else if (currentStep === 4 && pastaAdded && saucePrepared) {
+                serveSpaghetti();
+            }
+        }
+        
+        // Boil water animation
+        function boilWater() {
+            if (waterLevel < 100) {
+                waterLevel += 20;
+                water.style.height = `${waterLevel}%`;
+                createBubbles();
+                
+                if (waterLevel === 100) {
+                    actionBtn.textContent = 'Pasta is Ready!';
+                    updateScore(15);
+                    completeStep();
+                } else {
+                    actionBtn.textContent = `Add Water (${waterLevel}%)`;
+                }
+            }
+        }
+        
+        // Start cooking pasta timer
+        function startCookingPasta() {
+            if (!isCooking) {
+                isCooking = true;
+                timer = 0;
+                actionBtn.disabled = true;
+                
+                timerInterval = setInterval(() => {
+                    timer++;
+                    timerEl.textContent = `Time: ${timer}s`;
+                    
+                    if (timer >= 10) {
+                        clearInterval(timerInterval);
+                        actionBtn.disabled = false;
+                        actionBtn.textContent = 'Pasta is Ready!';
+                        updateScore(25);
+                        completeStep();
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Serve the finished spaghetti
+        function serveSpaghetti() {
+            // Calculate final score
+            let finalScore = score;
+            let starRating = 5;
+            
+            if (timer > 12) {
+                finalScore -= 10;
+                starRating = 4;
+            } else if (timer < 8) {
+                finalScore -= 5;
+                starRating = 4;
+            }
+            
+            if (finalScore < 60) {
+                starRating = 3;
+            } else if (finalScore < 70) {
+                starRating = 4;
+            }
+            
+            // Display results
+            stars.textContent = '★'.repeat(starRating) + '☆'.repeat(5 - starRating);
+            resultText.textContent = `You scored ${finalScore} points! ${getResultMessage(starRating)}`;
+            result.classList.add('show');
+            
+            updateScore(0, finalScore); // Set final score
+        }
+        
+        // Get result message based on stars
+        function getResultMessage(stars) {
+            switch(stars) {
+                case 5: return "Perfect! You're a master chef!";
+                case 4: return "Great job! Delicious spaghetti!";
+                case 3: return "Good effort! With practice, you'll improve.";
+                default: return "Keep practicing! You'll get better.";
+            }
+        }
+        
+        // Move to next step
+        function nextStep() {
+            if (currentStep < 4) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.getElementById(`step${currentStep}`).classList.add('completed');
+                
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                
+                updateProgress();
+                updateUIForStep();
+                
+                nextBtn.disabled = true;
+            }
+        }
+        
+        // Complete current step
+        function completeStep() {
+            nextBtn.disabled = false;
+        }
+        
+        // Update UI based on current step
+        function updateUIForStep() {
+            switch(currentStep) {
+                case 1:
+                    actionBtn.textContent = 'Add Water';
+                    actionBtn.disabled = false;
+                    break;
+                case 2:
+                    actionBtn.textContent = 'Cook Pasta';
+                    actionBtn.disabled = waterLevel !== 100;
+                    break;
+                case 3:
+                    actionBtn.textContent = 'Add Ingredients';
+                    actionBtn.disabled = true;
+                    break;
+                case 4:
+                    actionBtn.textContent = 'Serve Spaghetti';
+                    actionBtn.disabled = !pastaAdded || !saucePrepared;
+                    break;
+            }
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const progress = (currentStep - 1) / 3 * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // Update score
+        function updateScore(points, setScore = null) {
+            if (setScore !== null) {
+                score = setScore;
+            } else {
+                score += points;
+            }
+            scoreValue.textContent = score;
+        }
+        
+        // Reset the game
+        function resetGame() {
+            currentStep = 1;
+            score = 0;
+            timer = 0;
+            isCooking = false;
+            waterLevel = 0;
+            pastaAdded = false;
+            saucePrepared = false;
+            
+            // Reset UI
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.getElementById('step1').classList.add('active');
+            
+            water.style.height = '0%';
+            pastaInPot.style.height = '0%';
+            pastaInPot.innerHTML = '';
+            timerEl.textContent = 'Time: 0s';
+            result.classList.remove('show');
+            
+            updateProgress();
+            updateUIForStep();
+            updateScore(0);
+            nextBtn.disabled = true;
+            actionBtn.disabled = false;
+            
+            clearInterval(timerInterval);
+        }
+        
+        // Initialize the game when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
