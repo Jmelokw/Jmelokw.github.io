@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elf Ski - Slippery Slope Edition</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #0c3b6a 0%, #1a237e 100%);
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        canvas {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+        }
+        #gameContainer {
+            position: relative;
+        }
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 28px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            z-index: 10;
+        }
+        #jumpCounter {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            font-size: 18px;
+            color: #FFEB3B;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            z-index: 10;
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            font-size: 36px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            display: none;
+            z-index: 10;
+        }
+        #restartBtn {
+            padding: 12px 25px;
+            font-size: 20px;
+            background-color: #FF4081;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        #restartBtn:hover {
+            transform: scale(1.05);
+            background-color: #FF79A9;
+        }
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #FFEB3B;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .powerup {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            color: #00FF88;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="score">Score: 0</div>
+        <div id="jumpCounter">Jumps: 1/2</div>
+        <div id="powerupIndicator" class="powerup">Double Jump Ready!</div>
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+        <div id="gameOver">
+            <div>Game Over!</div>
+            <div id="finalScore">Score: 0</div>
+            <button id="restartBtn">Play Again</button>
+        </div>
+        <div class="instructions">SPACE or UP ARROW to JUMP | Double jump in air! | Ice is slippery!</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const jumpCounterElement = document.getElementById('jumpCounter');
+        const powerupIndicator = document.getElementById('powerupIndicator');
+        const gameOverElement = document.getElementById('gameOver');
+        const finalScoreElement = document.getElementById('finalScore');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Game variables
+        let score = 0;
+        let gameSpeed = 5;
+        let isGameOver = false;
+        let frames = 0;
+        let horizontalSpeed = 0;
+        const maxHorizontalSpeed = 8;
+
+        // Elf player
+        const elf = {
+            x: 100,
+            y: canvas.height / 2,
+            width: 50,
+            height: 60,
+            jumpPower: 13,
+            velocity: 0,
+            gravity: 0.5,
+            jumpsRemaining: 2,
+            maxJumps: 2,
+            isOnGround: false,
+            lastJumpTime: 0,
+            jumpCooldown: 300, // ms between jumps
+
+            draw() {
+                // Elf body (green suit)
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+
+                // Elf face
+                ctx.fillStyle = '#FFCCBC';
+                ctx.fillRect(this.x + 10, this.y + 5, 30, 25);
+
+                // Hat (red with white puff)
+                ctx.fillStyle = '#F44336';
+                ctx.fillRect(this.x, this.y - 10, this.width, 10);
+                ctx.fillRect(this.x + 15, this.y - 25, 20, 20);
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(this.x + 25, this.y - 25, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Eyes
+                ctx.fillStyle = '#000';
+                ctx.fillRect(this.x + 15, this.y + 10, 5, 5);
+                ctx.fillRect(this.x + 30, this.y + 10, 5, 5);
+
+                // Skis (make them look icy)
+                ctx.fillStyle = '#80DEEA';
+                ctx.fillRect(this.x - 5, this.y + this.height, 60, 8);
+                
+                // Ski edges
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(this.x - 5, this.y + this.height, 60, 2);
+                
+                // Ski poles (only show when on ground)
+                if (this.isOnGround) {
+                    ctx.fillStyle = '#CFD8DC';
+                    ctx.fillRect(this.x - 15, this.y + 20, 5, 40);
+                    ctx.fillRect(this.x + this.width + 10, this.y + 20, 5, 40);
+                }
+
+                // Jump indicator (little sparkle when double jump available)
+                if (this.jumpsRemaining === 2) {
+                    ctx.fillStyle = '#FFFF00';
+                    ctx.beginPath();
+                    ctx.arc(this.x + 40, this.y - 5, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            },
+
+            jump() {
+                const now = Date.now();
+                if (now - this.lastJumpTime < this.jumpCooldown) return;
+                
+                if (this.jumpsRemaining > 0) {
+                    this.velocity = -this.jumpPower;
+                    this.jumpsRemaining--;
+                    this.isOnGround = false;
+                    this.lastJumpTime = now;
+                    
+                    // Little horizontal boost when jumping
+                    horizontalSpeed += 1.5;
+                    if (horizontalSpeed > maxHorizontalSpeed) horizontalSpeed = maxHorizontalSpeed;
+                    
+                    // Update jump counter display
+                    jumpCounterElement.textContent = `Jumps: ${this.jumpsRemaining}/${this.maxJumps}`;
+                    
+                    // Show powerup indicator briefly
+                    powerupIndicator.style.display = 'block';
+                    setTimeout(() => {
+                        powerupIndicator.style.display = 'none';
+                    }, 500);
+                }
+            },
+
+            update() {
+                // Apply gravity
+                this.velocity += this.gravity;
+                this.y += this.velocity;
+
+                // Apply horizontal movement (slippery ice effect)
+                this.x += horizontalSpeed;
+                
+                // Apply ice friction (slow down gradually when not accelerating)
+                horizontalSpeed *= 0.98;
+                if (Math.abs(horizontalSpeed) < 0.1) horizontalSpeed = 0;
+
+                // Floor collision
+                if (this.y >= canvas.height - this.height - 30) {
+                    this.y = canvas.height - this.height - 30;
+                    this.velocity = 0;
+                    this.isOnGround = true;
+                    this.jumpsRemaining = this.maxJumps; // Reset jumps when on ground
+                    jumpCounterElement.textContent = `Jumps: ${this.jumpsRemaining}/${this.maxJumps}`;
+                } else {
+                    this.isOnGround = false;
+                }
+
+                // Ceiling collision
+                if (this.y <= 0) {
+                    this.y = 0;
+                    this.velocity = 0.5; // Bounce down slightly
+                }
+
+                // Keep elf on screen horizontally
+                if (this.x < 50) {
+                    this.x = 50;
+                    horizontalSpeed = 0;
+                }
+                if (this.x > canvas.width - this.width - 50) {
+                    this.x = canvas.width - this.width - 50;
+                    horizontalSpeed = 0;
+                }
+            },
+
+            reset() {
+                this.y = canvas.height / 2;
+                this.x = 100;
+                this.velocity = 0;
+                this.isOnGround = false;
+                this.jumpsRemaining = this.maxJumps;
+                jumpCounterElement.textContent = `Jumps: ${this.jumpsRemaining}/${this.maxJumps}`;
+                horizontalSpeed = 0;
+            }
+        };
+
+        // Obstacles (SHORTER trees)
+        const obstacles = [];
+        class Obstacle {
+            constructor() {
+                this.width = 40;
+                this.height = 40 + Math.random() * 60; // MUCH SHORTER: 40-100px tall (was 80-180)
+                this.x = canvas.width;
+                this.y = canvas.height - this.height - 30; // Match ground level
+                this.color = '#388E3C';
+            }
+
+            draw() {
+                // Tree trunk (shorter)
+                ctx.fillStyle = '#5D4037';
+                ctx.fillRect(this.x + 15, this.y + this.height - 20, 10, 20);
+
+                // Tree leaves (smaller)
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y + this.height - 20);
+                ctx.lineTo(this.x + this.width, this.y + this.height - 20);
+                ctx.lineTo(this.x + this.width / 2, this.y);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Snow on tree
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(this.x + this.width/2, this.y + 10, 8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            update() {
+                this.x -= gameSpeed;
+                // Apply slippery ice effect to obstacles too (they slide a bit)
+                this.x -= horizontalSpeed * 0.3;
+                this.draw();
+            }
+
+            collide() {
+                // Slightly more forgiving hitbox
+                const elfHitbox = {
+                    x: elf.x + 10,
+                    y: elf.y + 10,
+                    width: elf.width - 20,
+                    height: elf.height - 15
+                };
+                
+                return (
+                    elfHitbox.x < this.x + this.width &&
+                    elfHitbox.x + elfHitbox.width > this.x &&
+                    elfHitbox.y < this.y + this.height &&
+                    elfHitbox.y + elfHitbox.height > this.y
+                );
+            }
+        }
+
+        // Collectibles (gifts)
+        const gifts = [];
+        class Gift {
+            constructor() {
+                this.width = 30;
+                this.height = 30;
+                this.x = canvas.width;
+                this.y = Math.random() * (canvas.height - 150) + 50;
+                this.colors = ['#F44336', '#2196F3', '#FFEB3B', '#9C27B0', '#00E676'];
+                this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+                this.collected = false;
+                this.floatOffset = Math.random() * Math.PI * 2;
+            }
+
+            draw() {
+                // Floating animation
+                const floatY = this.y + Math.sin(frames * 0.05 + this.floatOffset) * 5;
+                
+                // Gift box
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, floatY, this.width, this.height);
+
+                // Ribbon
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(this.x + this.width/2 - 3, floatY, 6, this.height);
+                ctx.fillRect(this.x, floatY + this.height/2 - 3, this.width, 6);
+
+                // Sparkle effect
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(this.x + this.width/2, floatY + this.height/2, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Glow effect
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - 2, floatY - 2, this.width + 4, this.height + 4);
+                ctx.shadowBlur = 0;
+            }
+
+            update() {
+                this.x -= gameSpeed;
+                // Apply ice effect to gifts too
+                this.x -= horizontalSpeed * 0.2;
+                if (!this.collected) this.draw();
+            }
+
+            collect() {
+                if (
+                    !this.collected &&
+                    elf.x < this.x + this.width &&
+                    elf.x + elf.width > this.x &&
+                    elf.y < this.y + this.height &&
+                    elf.y + elf.height > this.y
+                ) {
+                    this.collected = true;
+                    score += 10;
+                    scoreElement.textContent = `Score: ${score}`;
+                    
+                    // Small speed boost when collecting gifts
+                    horizontalSpeed += 2;
+                    if (horizontalSpeed > maxHorizontalSpeed) horizontalSpeed = maxHorizontalSpeed;
+                    
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // Background with icy look
+        function drawBackground() {
+            // Sky
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#E0F6FF');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Icy mountains
+            ctx.fillStyle = '#B0BEC5';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            ctx.lineTo(0, canvas.height - 150);
+            ctx.lineTo(200, canvas.height - 300);
+            ctx.lineTo(400, canvas.height - 100);
+            ctx.lineTo(600, canvas.height - 250);
+            ctx.lineTo(canvas.width, canvas.height - 150);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+
+            // Ice/snow on mountains
+            ctx.fillStyle = '#ECEFF1';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 150);
+            ctx.lineTo(200, canvas.height - 300);
+            ctx.lineTo(400, canvas.height - 100);
+            ctx.lineTo(300, canvas.height - 100);
+            ctx.lineTo(150, canvas.height - 200);
+            ctx.closePath();
+            ctx.fill();
+
+            // Ground (ICE - slippery!)
+            const iceGradient = ctx.createLinearGradient(0, canvas.height - 50, 0, canvas.height);
+            iceGradient.addColorStop(0, '#80DEEA');
+            iceGradient.addColorStop(0.5, '#4FC3F7');
+            iceGradient.addColorStop(1, '#0288D1');
+            ctx.fillStyle = iceGradient;
+            ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+            
+            // Ice reflection lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, canvas.height - 30);
+                ctx.lineTo(i + 20, canvas.height);
+                ctx.stroke();
+            }
+            
+            // Snowflakes in the air
+            ctx.fillStyle = '#FFFFFF';
+            for (let i = 0; i < 20; i++) {
+                const x = (frames + i * 50) % canvas.width;
+                const y = (frames * 0.5 + i * 30) % (canvas.height - 100);
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Generate obstacles and gifts
+        function generateObjects() {
+            if (frames % 100 === 0) { // More frequent obstacles
+                obstacles.push(new Obstacle());
+            }
+
+            if (frames % 80 === 0) { // More frequent gifts
+                gifts.push(new Gift());
+            }
+        }
+
+        // Ice slide effect
+        function applyIcePhysics() {
+            // Random small speed changes to simulate ice
+            if (Math.random() < 0.05 && horizontalSpeed < maxHorizontalSpeed * 0.5) {
+                horizontalSpeed += Math.random() * 0.5 - 0.25;
+            }
+            
+            // Display ice effect
+            if (horizontalSpeed > 2) {
+                ctx.fillStyle = 'rgba(128, 222, 234, 0.3)';
+                ctx.fillRect(elf.x - 10, elf.y + elf.height, elf.width + 20, 5);
+            }
+        }
+
+        // Game loop
+        function gameLoop() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!isGameOver) {
+                // Draw background
+                drawBackground();
+
+                // Apply ice physics
+                applyIcePhysics();
+
+                // Update & draw elf
+                elf.update();
+                elf.draw();
+
+                // Generate objects
+                generateObjects();
+
+                // Update obstacles
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    obstacles[i].update();
+
+                    // Remove off-screen obstacles
+                    if (obstacles[i].x + obstacles[i].width < 0) {
+                        obstacles.splice(i, 1);
+                        score += 5;
+                        scoreElement.textContent = `Score: ${score}`;
+                        continue;
+                    }
+
+                    // Check collision
+                    if (obstacles[i].collide()) {
+                        // If moving fast, you can crash through small obstacles!
+                        if (horizontalSpeed > 6 && obstacles[i].height < 70) {
+                            obstacles.splice(i, 1);
+                            score += 20;
+                            scoreElement.textContent = `Score: ${score}`;
+                            horizontalSpeed *= 0.7; // Slow down after crash
+                        } else {
+                            gameOver();
+                        }
+                    }
+                }
+
+                // Update gifts
+                for (let i = gifts.length - 1; i >= 0; i--) {
+                    gifts[i].update();
+                    gifts[i].collect();
+
+                    // Remove off-screen or collected gifts
+                    if (gifts[i].x + gifts[i].width < 0 || gifts[i].collected) {
+                        gifts.splice(i, 1);
+                    }
+                }
+
+                // Increase difficulty
+                if (frames % 800 === 0) {
+                    gameSpeed += 0.3;
+                }
+
+                frames++;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Game over function
+        function gameOver() {
+            isGameOver = true;
+            finalScoreElement.textContent = `Final Score: ${score}`;
+            gameOverElement.style.display = 'block';
+        }
+
+        // Restart game
+        function restartGame() {
+            score = 0;
+            gameSpeed = 5;
+            isGameOver = false;
+            frames = 0;
+            obstacles.length = 0;
+            gifts.length = 0;
+            scoreElement.textContent = `Score: ${score}`;
+            gameOverElement.style.display = 'none';
+            elf.reset();
+            horizontalSpeed = 0;
+            powerupIndicator.style.display = 'none';
+        }
+
+        // Controls
+        document.addEventListener('keydown', (e) => {
+            if (isGameOver && e.code === 'Enter') {
+                restartGame();
+                return;
+            }
+            
+            if (!isGameOver) {
+                if (e.code === 'Space' || e.code === 'ArrowUp') {
+                    elf.jump();
+                }
+                // Left/right for extra control (optional)
+                if (e.code === 'ArrowLeft') {
+                    horizontalSpeed -= 3;
+                }
+                if (e.code === 'ArrowRight') {
+                    horizontalSpeed += 3;
+                }
+            }
+        });
+
+        canvas.addEventListener('click', () => {
+            if (!isGameOver) elf.jump();
+        });
+
+        // Touch controls for mobile
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (!isGameOver) elf.jump();
+        });
+
+        restartBtn.addEventListener('click', restartGame);
+
+        // Auto-jump occasionally to show ice physics
+        setInterval(() => {
+            if (!isGameOver && Math.random() < 0.003) {
+                elf.jump();
+            }
+        }, 100);
+
+        // Start game
+        gameLoop();
+    </script>
+</body>
+</html>
