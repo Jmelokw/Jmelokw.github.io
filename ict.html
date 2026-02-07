@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Components Quiz</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-top: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            color: #667eea;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .component {
+            background: #f0f4ff;
+            border: 2px solid #d1d9ff;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s ease;
+            touch-action: none;
+        }
+        
+        .component:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .function-card {
+            background: #f8f9ff;
+            border: 2px dashed #a8b4ff;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .function-text {
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #444;
+            line-height: 1.4;
+        }
+        
+        .drop-zone {
+            min-height: 60px;
+            width: 100%;
+            border: 2px dashed #a8b4ff;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            padding: 10px;
+        }
+        
+        .drop-zone.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+        
+        .feedback {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 25px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .correct-match {
+            animation: pulse 0.5s ease;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                margin-top: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .components-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .component {
+                padding: 12px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .function-card {
+                padding: 15px;
+                min-height: 100px;
+            }
+            
+            .function-text {
+                font-size: 1rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                padding: 14px;
+            }
+            
+            .stats {
+                padding: 12px;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>ICT Components Quiz</h1>
+    <p class="subtitle">Drag the component to match its function</p>
+    
+    <div class="container">
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Matches</div>
+                <div class="stat-value" id="matches">0/8</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Streak</div>
+                <div class="stat-value" id="streak">0</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="game-area">
+            <div class="function-card">
+                <div class="function-text" id="current-function">Loading...</div>
+                <div class="drop-zone" id="drop-zone">
+                    <span style="color: #999;">Drag component here</span>
+                </div>
+            </div>
+            
+            <div class="components-grid" id="components-container">
+                <!-- Components will be inserted here by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+        
+        <div class="controls">
+            <button class="btn btn-secondary" id="hint-btn">Give Hint</button>
+            <button class="btn btn-primary" id="next-btn">Next Function</button>
+        </div>
+    </div>
+
+    <script>
+        // Component data from the provided information
+        const components = [
+            {
+                name: "RAM",
+                function: "Stores the temporary data and the computer programs that the CPU is currently running",
+                shortDesc: "Temporary memory"
+            },
+            {
+                name: "CPU",
+                function: "Executes arithmetic and logical operations as it hosts the running of all programs",
+                shortDesc: "Process info"
+            },
+            {
+                name: "GPU",
+                function: "Creates the images which show on the screen",
+                shortDesc: "Show images"
+            },
+            {
+                name: "Motherboard",
+                function: "Connects all the computer's internal hardware components together",
+                shortDesc: "Connects components"
+            },
+            {
+                name: "HDD",
+                function: "Stores data for the long-term even when the computer is turned off",
+                shortDesc: "Long-term memory"
+            },
+            {
+                name: "PSU",
+                function: "Takes energy from the power source, and transforms and distributes this energy around the computer system",
+                shortDesc: "Power supply"
+            },
+            {
+                name: "Sound Card",
+                function: "Provides input and output of audio signals to and from a computer under the control of computer programs",
+                shortDesc: "Handles audio"
+            },
+            {
+                name: "Network Card",
+                function: "Enables the computer to connect to networks and/or other computers",
+                shortDesc: "Network connection"
+            },
+            {
+                name: "ROM",
+                function: "Holds all control programs and instructions which are needed for operating computer system and hardware components",
+                shortDesc: "Startup memory"
+            }
+        ];
+
+        // Game state
+        let score = 0;
+        let matches = 0;
+        let streak = 0;
+        let currentFunctionIndex = 0;
+        let usedFunctions = new Set();
+        let shuffledComponents = [];
+        
+        // DOM elements
+        const scoreElement = document.getElementById('score');
+        const matchesElement = document.getElementById('matches');
+        const streakElement = document.getElementById('streak');
+        const progressElement = document.getElementById('progress');
+        const currentFunctionElement = document.getElementById('current-function');
+        const dropZone = document.getElementById('drop-zone');
+        const componentsContainer = document.getElementById('components-container');
+        const feedbackElement = document.getElementById('feedback');
+        const hintButton = document.getElementById('hint-btn');
+        const nextButton = document.getElementById('next-btn');
+        
+        // Initialize the game
+        function initGame() {
+            score = 0;
+            matches = 0;
+            streak = 0;
+            usedFunctions.clear();
+            updateStats();
+            
+            // Shuffle components
+            shuffledComponents = [...components].sort(() => Math.random() - 0.5);
+            
+            // Display components
+            renderComponents();
+            
+            // Get a new random function
+            getNewFunction();
+            
+            // Setup drag and drop
+            setupDragAndDrop();
+        }
+        
+        // Render components to the grid
+        function renderComponents() {
+            componentsContainer.innerHTML = '';
+            
+            shuffledComponents.forEach(component => {
+                const componentElement = document.createElement('div');
+                componentElement.className = 'component';
+                componentElement.textContent = component.name;
+                componentElement.dataset.name = component.name;
+                componentElement.dataset.desc = component.shortDesc;
+                
+                // Make component draggable
+                componentElement.setAttribute('draggable', 'true');
+                
+                componentsContainer.appendChild(componentElement);
+            });
+        }
+        
+        // Get a new random function that hasn't been used yet
+        function getNewFunction() {
+            if (usedFunctions.size >= components.length) {
+                // All functions used, reset
+                usedFunctions.clear();
+            }
+            
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * components.length);
+            } while (usedFunctions.has(randomIndex));
+            
+            usedFunctions.add(randomIndex);
+            currentFunctionIndex = randomIndex;
+            
+            currentFunctionElement.textContent = components[randomIndex].function;
+            updateProgress();
+            
+            // Reset feedback
+            feedbackElement.className = 'feedback';
+            feedbackElement.textContent = '';
+            
+            // Reset drop zone
+            dropZone.innerHTML = '<span style="color: #999;">Drag component here</span>';
+            dropZone.classList.remove('active');
+        }
+        
+        // Update game stats display
+        function updateStats() {
+            scoreElement.textContent = score;
+            matchesElement.textContent = `${matches}/${components.length}`;
+            streakElement.textContent = streak;
+            
+            // Update progress bar
+            progressElement.style.width = `${(matches / components.length) * 100}%`;
+        }
+        
+        // Update progress text
+        function updateProgress() {
+            const progressPercent = Math.round((usedFunctions.size / components.length) * 100);
+            // Optional: You could display this somewhere if needed
+        }
+        
+        // Setup drag and drop functionality
+        function setupDragAndDrop() {
+            const componentElements = document.querySelectorAll('.component');
+            
+            // Drag events for components
+            componentElements.forEach(component => {
+                component.addEventListener('dragstart', handleDragStart);
+                component.addEventListener('touchstart', handleTouchStart, { passive: false });
+            });
+            
+            // Drop zone events
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+            dropZone.addEventListener('drop', handleDrop);
+            
+            // Touch events for mobile
+            dropZone.addEventListener('touchmove', handleTouchMove, { passive: false });
+            dropZone.addEventListener('touchend', handleTouchEnd);
+            dropZone.addEventListener('touchcancel', handleTouchCancel);
+        }
+        
+        // Drag and drop handlers
+        let draggedComponent = null;
+        
+        function handleDragStart(e) {
+            draggedComponent = this;
+            e.dataTransfer.setData('text/plain', this.dataset.name);
+            this.style.opacity = '0.5';
+        }
+        
+        function handleTouchStart(e) {
+            e.preventDefault();
+            draggedComponent = this;
+            this.style.opacity = '0.5';
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropZone.classList.add('active');
+        }
+        
+        function handleDragLeave() {
+            dropZone.classList.remove('active');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            
+            if (draggedComponent) {
+                checkAnswer(draggedComponent.dataset.name);
+                draggedComponent.style.opacity = '1';
+                draggedComponent = null;
+            }
+        }
+        
+        // Touch handlers for mobile
+        function handleTouchMove(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (element === dropZone || dropZone.contains(element)) {
+                dropZone.classList.add('active');
+            } else {
+                dropZone.classList.remove('active');
+            }
+        }
+        
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            
+            const touch = e.changedTouches[0];
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if ((element === dropZone || dropZone.contains(element)) && draggedComponent) {
+                checkAnswer(draggedComponent.dataset.name);
+            }
+            
+            if (draggedComponent) {
+                draggedComponent.style.opacity = '1';
+                draggedComponent = null;
+            }
+            
+            dropZone.classList.remove('active');
+        }
+        
+        function handleTouchCancel() {
+            if (draggedComponent) {
+                draggedComponent.style.opacity = '1';
+                draggedComponent = null;
+            }
+            dropZone.classList.remove('active');
+        }
+        
+        // Check if the dragged component matches the current function
+        function checkAnswer(componentName) {
+            const correctComponent = components[currentFunctionIndex];
+            const isCorrect = componentName === correctComponent.name;
+            
+            // Update drop zone with the answer
+            dropZone.innerHTML = `
+                <div style="text-align: center;">
+                    <strong>${componentName}</strong><br>
+                    <small>${document.querySelector(`[data-name="${componentName}"]`).dataset.desc}</small>
+                </div>
+            `;
+            
+            // Update game state
+            if (isCorrect) {
+                score += 10;
+                matches++;
+                streak++;
+                
+                feedbackElement.textContent = `Correct! ${componentName} - ${correctComponent.shortDesc}`;
+                feedbackElement.className = 'feedback correct';
+                
+                // Animate the drop zone for correct answer
+                dropZone.classList.add('correct-match');
+                setTimeout(() => {
+                    dropZone.classList.remove('correct-match');
+                }, 500);
+            } else {
+                streak = 0;
+                
+                feedbackElement.textContent = `Incorrect! The correct answer was: ${correctComponent.name}`;
+                feedbackElement.className = 'feedback incorrect';
+            }
+            
+            updateStats();
+            
+            // Disable the used component
+            const usedComponent = document.querySelector(`[data-name="${componentName}"]`);
+            usedComponent.style.opacity = '0.5';
+            usedComponent.style.cursor = 'not-allowed';
+            usedComponent.setAttribute('draggable', 'false');
+            
+            // Enable next button
+            nextButton.disabled = false;
+        }
+        
+        // Give a hint
+        hintButton.addEventListener('click', () => {
+            const correctComponent = components[currentFunctionIndex];
+            
+            // Find the correct component element
+            const componentElements = document.querySelectorAll('.component');
+            componentElements.forEach(el => {
+                if (el.dataset.name === correctComponent.name) {
+                    // Highlight the correct component
+                    el.style.animation = 'pulse 0.5s ease 3';
+                    setTimeout(() => {
+                        el.style.animation = '';
+                    }, 1500);
+                    
+                    // Show hint in feedback
+                    feedbackElement.textContent = `Hint: The answer starts with "${correctComponent.name.charAt(0)}"`;
+                    feedbackElement.className = 'feedback';
+                    feedbackElement.style.display = 'block';
+                    
+                    // Deduct points for using hint
+                    score = Math.max(0, score - 2);
+                    updateStats();
+                }
+            });
+        });
+        
+        // Next function button
+        nextButton.addEventListener('click', () => {
+            getNewFunction();
+            
+            // Re-enable all components (except correctly matched ones)
+            const componentElements = document.querySelectorAll('.component');
+            componentElements.forEach(el => {
+                // Only re-enable if it hasn't been correctly matched
+                if (el.style.opacity !== '0.5' || el.style.cursor !== 'not-allowed') {
+                    el.style.opacity = '1';
+                    el.style.cursor = 'grab';
+                    el.setAttribute('draggable', 'true');
+                }
+            });
+            
+            nextButton.disabled = true;
+        });
+        
+        // Initialize the game when page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+        
+        // Prevent context menu on mobile for better UX
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.classList.contains('component')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
